@@ -1,6 +1,11 @@
 package app
 
 import (
+	"database/sql"
+	"fmt"
+
+	"github.com/go-redis/redis"
+	_ "github.com/lib/pq"
 	"github.com/revel/revel"
 )
 
@@ -11,6 +16,43 @@ var (
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
 )
+
+// DB postgres instance
+var DB *sql.DB
+
+// Redis redis client instance
+var Redis *redis.Client
+
+func initDB() {
+	config := revel.Config
+	username, _ := config.String("db.username")
+	pwd, _ := config.String("db.pwd")
+	dbname, _ := config.String("db.dbname")
+
+	dbPath := fmt.Sprintf("host=db user=%s password=%s dbname=%s sslmode=disable", username, pwd, dbname)
+	db, err := sql.Open("postgres", dbPath)
+	if err != nil {
+		panic(err)
+	}
+	DB = db
+
+	revel.INFO.Println("DB connected")
+}
+
+func initRedis() {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "redis:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	_, err := client.Ping().Result()
+	if err != nil {
+		panic(err)
+	}
+	revel.INFO.Println("redis connected")
+	Redis = client
+}
 
 func init() {
 	// Filters is the default set of global filters.
@@ -29,12 +71,14 @@ func init() {
 		revel.ActionInvoker,           // Invoke the action.
 	}
 
-
 	// register startup functions with OnAppStart
 	// revel.DevMode and revel.RunMode only work inside of OnAppStart. See Example Startup Script
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
-	// revel.OnAppStart(InitDB)
+	revel.OnAppStart(func() {
+		initDB()
+		initRedis()
+	})
 	// revel.OnAppStart(FillCache)
 }
 
