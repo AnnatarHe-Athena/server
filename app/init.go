@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"log"
+
 	"github.com/go-redis/redis"
 	_ "github.com/lib/pq"
 	"github.com/revel/revel"
@@ -34,6 +36,7 @@ func initDB() {
 	if err != nil {
 		panic(err)
 	}
+	log.Println(db)
 	DB = db
 
 	revel.INFO.Println("DB connected")

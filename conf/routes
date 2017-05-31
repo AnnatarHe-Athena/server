@@ -8,6 +8,7 @@ module:testrunner
 
 
 GET     /                                       App.Index
+GET     /girls/:cate/:row/:offset                    Girls.Get
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
