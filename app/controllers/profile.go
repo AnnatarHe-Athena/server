@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/douban-girls/douban-girls-server/app/initial"
@@ -74,8 +73,8 @@ func (p Profile) Signin() revel.Result {
 }
 
 // Logout will remove session
-func (p Profile) Logout() revel.Result {
-	uid := strings.Split(p.Request.Header.Get("douban-girls-token"), "|")[0]
+func (p *Profile) Logout() revel.Result {
+	uid := utils.GetUID(p.Request)
 	go initial.Redis.Del("token:" + uid)
 	return p.RenderJSON(utils.Response(200, map[string]string{"message": "success"}, nil))
 }
@@ -90,5 +89,9 @@ func (p Profile) Update(uid int) revel.Result {
 // UserInfo will get user profile by id
 func (p Profile) UserInfo(uid int) revel.Result {
 	// TODO:
-	return p.RenderJSON(utils.Response(200, nil, nil))
+	result, err := initial.DB.Exec("SELECT * FROM users WHERE id=?", uid)
+	if err != nil {
+		return p.RenderJSON(utils.Response(404, nil, err))
+	}
+	return p.RenderJSON(utils.Response(200, result, nil))
 }

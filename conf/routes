@@ -21,7 +21,6 @@ DELETE  /api/collection/:ids                    Collection.RemoveFromCollection
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
-GET     /api/collection/ttt                     Collection.T
 GET     /api/exception/token                    Exception.TokenMiss
 
 # Map static resources from the /app/public folder to the /public path

@@ -20,7 +20,7 @@ func TokenFilter(c *revel.Controller, fc []revel.Filter) {
 			c.Result = c.RenderJSON(utils.Response(400, nil, err))
 			return
 		}
-		uid := strings.Split(c.Request.Header.Get("douban-girls-token"), "|")[0]
+		uid := utils.GetUID(c.Request)
 		tokenInRedis := initial.Redis.Get("token:" + uid)
 		if err := tokenInRedis.Err(); err != nil {
 			c.Result = c.RenderJSON(utils.Response(403, nil, err))

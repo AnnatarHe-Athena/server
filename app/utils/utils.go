@@ -5,6 +5,9 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
+	"strings"
+
+	"github.com/revel/revel"
 )
 
 // Response just return response info
@@ -32,4 +35,13 @@ func Md5Encode(resource string) string {
 func Sha256Encode(resource string) string {
 	result := sha256.Sum256([]byte(resource))
 	return hex.EncodeToString(result[:])
+}
+
+// GetUID will return uid from header
+func GetUID(request *revel.Request) string {
+	token := request.Header.Get("douban-girls-token")
+	if token == "" {
+		return ""
+	}
+	return strings.Split(token, "|")[0]
 }
