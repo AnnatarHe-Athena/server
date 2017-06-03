@@ -6,12 +6,23 @@
 module:testrunner
 # module:jobs
 
-
 GET     /                                       App.Index
-GET     /girls/:cate/:row/:offset                    Girls.Get
+GET     /api/girls/:cate/:row/:offset           Girls.Get
+
+POST    /api/auth/signup                        Profile.Signup
+POST    /api/auth/signin                        Profile.Signin
+GET     /api/auth/logout                        Profile.Logout
+
+GET     /api/user/:uid                          Profile.UserInfo
+PUT     /api/user/:uid/update                   Profile.Update
+
+POST    /api/collection/:ids                    Collection.AddToCollection
+DELETE  /api/collection/:ids                    Collection.RemoveFromCollection
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
+GET     /api/collection/ttt                     Collection.T
+GET     /api/exception/token                    Exception.TokenMiss
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/*filepath                       Static.Serve("public")

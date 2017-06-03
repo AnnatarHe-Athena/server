@@ -1,12 +1,8 @@
 package app
 
 import (
-	"database/sql"
-	"fmt"
-
-	"log"
-
-	"github.com/go-redis/redis"
+	"github.com/douban-girls/douban-girls-server/app/filters"
+	"github.com/douban-girls/douban-girls-server/app/initial"
 	_ "github.com/lib/pq"
 	"github.com/revel/revel"
 )
@@ -18,44 +14,6 @@ var (
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
 )
-
-// DB postgres instance
-var DB *sql.DB
-
-// Redis redis client instance
-var Redis *redis.Client
-
-func initDB() {
-	config := revel.Config
-	username, _ := config.String("db.username")
-	pwd, _ := config.String("db.pwd")
-	dbname, _ := config.String("db.dbname")
-
-	dbPath := fmt.Sprintf("host=db user=%s password=%s dbname=%s sslmode=disable", username, pwd, dbname)
-	db, err := sql.Open("postgres", dbPath)
-	if err != nil {
-		panic(err)
-	}
-	log.Println(db)
-	DB = db
-
-	revel.INFO.Println("DB connected")
-}
-
-func initRedis() {
-	client := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
-		Password: "",
-		DB:       0,
-	})
-
-	_, err := client.Ping().Result()
-	if err != nil {
-		panic(err)
-	}
-	revel.INFO.Println("redis connected")
-	Redis = client
-}
 
 func init() {
 	// Filters is the default set of global filters.
@@ -71,7 +29,8 @@ func init() {
 		HeaderFilter,                  // Add some security based headers
 		revel.InterceptorFilter,       // Run interceptors around the action.
 		revel.CompressFilter,          // Compress the result.
-		revel.ActionInvoker,           // Invoke the action.
+		filters.TokenFilter,
+		revel.ActionInvoker, // Invoke the action.
 	}
 
 	// register startup functions with OnAppStart
@@ -79,8 +38,8 @@ func init() {
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
 	revel.OnAppStart(func() {
-		initDB()
-		initRedis()
+		initial.InitDB()
+		initial.InitRedis()
 	})
 	// revel.OnAppStart(FillCache)
 }
