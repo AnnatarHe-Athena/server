@@ -1,4 +1,4 @@
-package model
+package schema
 
 // GetSchema migrate database tables
 func GetSchema() string {
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS cells (
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(48) UNIQUE NOT NULL,
+    name VARCHAR(36) UNIQUE NOT NULL,
     pwd VARCHAR(255) NOT NULL,
     avatar VARCHAR(255) NOT NULL DEFAULT '',
     bio VARCHAR(255) NOT NULL DEFAULT '',

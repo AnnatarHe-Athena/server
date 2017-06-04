@@ -4,8 +4,9 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
-	"io"
 	"strings"
+
+	"strconv"
 
 	"github.com/revel/revel"
 )
@@ -27,9 +28,10 @@ func Response(status int, data interface{}, err error) (result map[string]interf
 
 // Md5Encode will encode string with md5 method
 func Md5Encode(resource string) string {
-	h := md5.New()
-	io.WriteString(h, resource)
-	return string(h.Sum(nil))
+	src := []byte(resource)
+	result := md5.Sum(src)
+	return hex.EncodeToString(result[:16])
+
 }
 
 func Sha256Encode(resource string) string {
@@ -38,10 +40,15 @@ func Sha256Encode(resource string) string {
 }
 
 // GetUID will return uid from header
-func GetUID(request *revel.Request) string {
+func GetUID(request *revel.Request) int {
 	token := request.Header.Get("douban-girls-token")
 	if token == "" {
-		return ""
+		return -1
 	}
-	return strings.Split(token, "|")[0]
+	uidStr := strings.Split(token, "|")[0]
+	uid, err := strconv.Atoi(uidStr)
+	if err != nil {
+		return -1
+	}
+	return uid
 }

@@ -5,6 +5,8 @@ import (
 
 	"errors"
 
+	"strconv"
+
 	"github.com/douban-girls/douban-girls-server/app/initial"
 	"github.com/douban-girls/douban-girls-server/app/utils"
 	"github.com/revel/revel"
@@ -21,7 +23,7 @@ func TokenFilter(c *revel.Controller, fc []revel.Filter) {
 			return
 		}
 		uid := utils.GetUID(c.Request)
-		tokenInRedis := initial.Redis.Get("token:" + uid)
+		tokenInRedis := initial.Redis.Get("token:" + strconv.Itoa(uid))
 		if err := tokenInRedis.Err(); err != nil {
 			c.Result = c.RenderJSON(utils.Response(403, nil, err))
 			return
@@ -32,7 +34,5 @@ func TokenFilter(c *revel.Controller, fc []revel.Filter) {
 			return
 		}
 	}
-	revel.INFO.Println(token, uri)
-	revel.INFO.Println("token filter")
 	fc[0](c, fc[1:])
 }

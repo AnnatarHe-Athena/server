@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/douban-girls/douban-girls-server/app/initial"
+	"github.com/douban-girls/douban-girls-server/app/model"
 	"github.com/douban-girls/douban-girls-server/app/utils"
 	"github.com/revel/revel"
 )
@@ -11,19 +14,24 @@ type Collection struct {
 }
 
 // AddToCollection will add imgID to users collection
-func (c Collection) AddToCollection(ids []int) revel.Result {
-	uid := utils.GetUID(c.Request)
-	stat, err := initial.DB.Prepare("INSERT INTO collections(cell, owner) VALUES($1, $2)")
+func (c Collection) AddToCollection(ids string) revel.Result {
+	intIds, err := utils.CutCommaAndTrimStrings(ids)
 	if err != nil {
+		return c.RenderJSON(utils.Response(400, nil, err))
+	}
+	uid := utils.GetUID(c.Request)
+
+	var collections model.Collections
+	for _, id := range intIds {
+		collection := model.NewCollection(id, uid, -1)
+		fmt.Println(collection)
+		collections = append(collections, collection)
+	}
+	if err := collections.Save(); err != nil {
 		return c.RenderJSON(utils.Response(500, nil, err))
 	}
-	for id := range ids {
-		_, err := stat.Exec(id, uid)
-		if err != nil {
-			return c.RenderJSON(utils.Response(500, nil, err))
-		}
-	}
-	return c.RenderJSON(utils.Response(200, map[string]string{"message": "success"}, nil))
+
+	return c.RenderJSON(utils.Response(200, collections, nil))
 }
 
 // RemoveFromCollection will remove imgID from user collection

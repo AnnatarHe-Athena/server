@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/douban-girls/douban-girls-server/app/model"
+	"github.com/douban-girls/douban-girls-server/app/schema"
 	"github.com/go-redis/redis"
 	"github.com/revel/revel"
 )
@@ -29,7 +29,7 @@ func InitDB() {
 	}
 	log.Println(db)
 
-	if _, err := db.Exec(model.GetSchema()); err != nil {
+	if _, err := db.Exec(schema.GetSchema()); err != nil {
 		revel.INFO.Println(err.Error())
 	}
 
