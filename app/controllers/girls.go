@@ -33,11 +33,33 @@ func (g Girls) Get(cate, row, offset int) revel.Result {
 			return g.RenderError(err)
 		}
 		result = append(result, model.Cell{
-			Id:   id,
+			ID:   id,
 			Img:  img,
 			Text: text,
 			Cate: cate,
 		})
 	}
 	return g.RenderJSON(utils.Response(200, result, nil))
+}
+
+func (g Girls) GetCategories() revel.Result {
+	rows, err := initial.DB.Query("SELECT * FROM categories")
+	defer rows.Close()
+	if err != nil {
+		return g.RenderJSON(utils.Response(500, nil, err))
+	}
+
+	categories := []model.Category{}
+	for rows.Next() {
+		var id, src int
+		var name string
+		rows.Scan(&id, &name, &src)
+		category := model.Category{
+			ID:   id,
+			Name: name,
+			Src:  src,
+		}
+		categories = append(categories, category)
+	}
+	return g.RenderJSON(utils.Response(200, categories, nil))
 }

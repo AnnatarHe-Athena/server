@@ -1,8 +1,8 @@
 package model
 
 type Cell struct {
-	Id   int
-	Img  string
-	Text string
-	Cate int
+	ID   int    `json:"id"`
+	Img  string `json:"img"`
+	Text string `json:"text"`
+	Cate int    `json:"cate"`
 }
