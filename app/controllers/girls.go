@@ -43,23 +43,9 @@ func (g Girls) Get(cate, row, offset int) revel.Result {
 }
 
 func (g Girls) GetCategories() revel.Result {
-	rows, err := initial.DB.Query("SELECT * FROM categories")
-	defer rows.Close()
+	categories, err := models.FetchAllCategories(initial.DB)
 	if err != nil {
 		return g.RenderJSON(utils.Response(500, nil, err))
-	}
-
-	categories := []model.Category{}
-	for rows.Next() {
-		var id, src int
-		var name string
-		rows.Scan(&id, &name, &src)
-		category := model.Category{
-			ID:   id,
-			Name: name,
-			Src:  src,
-		}
-		categories = append(categories, category)
 	}
 	return g.RenderJSON(utils.Response(200, categories, nil))
 }
