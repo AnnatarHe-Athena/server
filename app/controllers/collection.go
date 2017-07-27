@@ -27,7 +27,7 @@ func (c Collection) AddToCollection(ids string) revel.Result {
 		fmt.Println(collection)
 		collections = append(collections, collection)
 	}
-	if err := collections.Save(); err != nil {
+	if err := collections.Save(initial.DB); err != nil {
 		return c.RenderJSON(utils.Response(500, nil, err))
 	}
 

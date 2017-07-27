@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/douban-girls/douban-girls-server/app/initial"
+	"database/sql"
 )
 
 type Collection struct {
@@ -29,8 +29,8 @@ func NewCollections(ids, cells, owners []int) Collections {
 	return collections
 }
 
-func (cs Collections) Save() error {
-	stat, err := initial.DB.Prepare("INSERT INTO collections(cell, owner) VALUES($1, $2) RETURNING id")
+func (cs Collections) Save(db *sql.DB) error {
+	stat, err := db.Prepare("INSERT INTO collections(cell, owner) VALUES($1, $2) RETURNING id")
 	if err != nil {
 		return err
 	}

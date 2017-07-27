@@ -6,11 +6,11 @@ import (
 )
 
 // Exceptionwill catch error
-type Exception struct {
+type ExceptionController struct {
 	*revel.Controller
 }
 
 // TokenMiss return token miss message and it should login first
-func (e Exception) TokenMiss() revel.Result {
+func (e ExceptionController) TokenMiss() revel.Result {
 	return e.RenderJSON(utils.Response(400, "token miss", nil))
 }

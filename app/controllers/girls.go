@@ -43,7 +43,7 @@ func (g Girls) Get(cate, row, offset int) revel.Result {
 }
 
 func (g Girls) GetCategories() revel.Result {
-	categories, err := models.FetchAllCategories(initial.DB)
+	categories, err := model.FetchAllCategories(initial.DB)
 	if err != nil {
 		return g.RenderJSON(utils.Response(500, nil, err))
 	}

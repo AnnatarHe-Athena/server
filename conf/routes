@@ -20,9 +20,11 @@ PUT     /api/user/:uid/update                   Profile.Update
 POST    /api/collection/:ids                    Collection.AddToCollection
 DELETE  /api/collection/:ids                    Collection.RemoveFromCollection
 
+GET     /graphql/v1                             GraphQLController.Fetch
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
-GET     /api/exception/token                    Exception.TokenMiss
+GET     /api/exception/token                    ExceptionController.TokenMiss
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/*filepath                       Static.Serve("public")

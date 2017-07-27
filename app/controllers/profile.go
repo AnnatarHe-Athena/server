@@ -39,7 +39,7 @@ func (p Profile) Signup() revel.Result {
 	bio := p.Params.Get("bio")
 
 	user := model.NewUser(id, email, name, pwd, avatar, bio, "")
-	err := user.Save()
+	err := user.Save(initial.DB)
 	if err != nil {
 		return p.RenderJSON(utils.Response(500, nil, err))
 	}
@@ -48,7 +48,7 @@ func (p Profile) Signup() revel.Result {
 	if err != nil {
 		return p.RenderJSON(utils.Response(500, nil, err))
 	}
-	if err := user.Update(); err != nil {
+	if err := user.Update(initial.DB); err != nil {
 		return p.RenderJSON(utils.Response(500, nil, err))
 	}
 	return p.RenderJSON(utils.Response(200, user, nil))
@@ -58,13 +58,13 @@ func (p Profile) Signup() revel.Result {
 func (p Profile) Signin() revel.Result {
 	email := p.Params.Get("email")
 	pwd := utils.Sha256Encode(p.Params.Get("password"))
-	user, err := model.UserAuth(email, pwd)
+	user, err := model.UserAuth(initial.DB, email, pwd)
 	if err != nil {
 		return p.RenderJSON(utils.Response(404, nil, err))
 	}
 	token, err := p.getToken(user.ID)
 	user.Token = token
-	if err := user.Update(); err != nil {
+	if err := user.Update(initial.DB); err != nil {
 		return p.RenderJSON(utils.Response(500, nil, err))
 	}
 	return p.RenderJSON(utils.Response(200, user, nil))
@@ -86,7 +86,7 @@ func (p Profile) Update(uid int) revel.Result {
 
 // UserInfo will get user profile by id
 func (p Profile) UserInfo(uid int) revel.Result {
-	user, err := model.FetchUserBy(uid)
+	user, err := model.FetchUserBy(initial.DB, uid)
 	if err != nil {
 		return p.RenderJSON(utils.Response(200, nil, err))
 	}

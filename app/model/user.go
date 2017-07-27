@@ -5,7 +5,7 @@ import (
 
 	"errors"
 
-	"github.com/douban-girls/douban-girls-server/app/initial"
+	"github.com/graphql-go/graphql"
 )
 
 type User struct {
@@ -18,6 +18,41 @@ type User struct {
 	Token       string      `json:"token"`
 	Collections Collections `json:"collection"`
 }
+
+var UserGraph = graphql.NewObject(graphql.ObjectConfig{
+	Name: "user",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type: graphql.Int,
+		},
+		"email": &graphql.Field{
+			Type: graphql.String,
+		},
+		"name": &graphql.Field{
+			Type: graphql.String,
+		},
+		"pwd": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "", nil
+			},
+			// ignore this field
+		},
+		"avatar": &graphql.Field{
+			Type: graphql.String,
+		},
+		"bio": &graphql.Field{
+			Type: graphql.String,
+		},
+		"token": &graphql.Field{
+			Type: graphql.String,
+		},
+		"collections": &graphql.Field{
+			// TODO:
+			Type: graphql.String,
+		},
+	},
+})
 
 func NewUser(id int, email, name, pwd, avatar, bio, token string) *User {
 	return &User{
@@ -32,9 +67,9 @@ func NewUser(id int, email, name, pwd, avatar, bio, token string) *User {
 }
 
 // Save 用户注册的时候没有 uid，所以无法生成 token
-func (u *User) Save() error {
+func (u *User) Save(db *sql.DB) error {
 	id := 0
-	err := initial.DB.QueryRow("INSERT INTO users(email, name, pwd, avatar, bio) VALUES($1, $2, $3, $4, $5) RETURNING id", u.Email, u.Name, u.Pwd, u.Avatar, u.Bio).Scan(&id)
+	err := db.QueryRow("INSERT INTO users(email, name, pwd, avatar, bio) VALUES($1, $2, $3, $4, $5) RETURNING id", u.Email, u.Name, u.Pwd, u.Avatar, u.Bio).Scan(&id)
 	if err != nil {
 		return err
 	}
@@ -43,15 +78,15 @@ func (u *User) Save() error {
 }
 
 // Update just allow to update avatar, bio and token by userID
-func (u *User) Update() error {
-	_, err := initial.DB.Exec(`
+func (u *User) Update(db *sql.DB) error {
+	_, err := db.Exec(`
 	UPDATE users SET avatar=$1, bio=$2, token=$3 WHERE id=$4
 	`, u.Avatar, u.Bio, u.Token, u.ID)
 	return err
 }
 
-func FetchUserBy(id int) (*User, error) {
-	rows, err := initial.DB.Query("SELECT DISTINCT ON (collections.cell) * FROM users LEFT JOIN collections ON users.id=collections.owner WHERE users.id=$1", id)
+func FetchUserBy(db *sql.DB, id int) (*User, error) {
+	rows, err := db.Query("SELECT DISTINCT ON (collections.cell) * FROM users LEFT JOIN collections ON users.id=collections.owner WHERE users.id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +97,8 @@ func FetchUserBy(id int) (*User, error) {
 	return users[0], nil
 }
 
-func UserAuth(email, pwd string) (*User, error) {
-	rows, err := initial.DB.Query("SELECT DISTINCT ON (collections.cell) * FROM users LEFT JOIN collection ON users.id=collections.owner WHERE users.email=$1 AND users.pwd=$2", email, pwd)
+func UserAuth(db *sql.DB, email, pwd string) (*User, error) {
+	rows, err := db.Query("SELECT DISTINCT ON (collections.cell) * FROM users LEFT JOIN collection ON users.id=collections.owner WHERE users.email=$1 AND users.pwd=$2", email, pwd)
 	if err != nil {
 		return nil, err
 	}
