@@ -1,0 +1,35 @@
+{
+  "name": "douban-girls-server",
+  "version": "0.0.1",
+  "description": "a douban grils server",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node ./app.js",
+    "start": "node ./app.js",
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/douban-girls/server.git"
+  },
+  "keywords": [
+    "girls"
+  ],
+  "author": "AnnatarHe",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/douban-girls/server/issues"
+  },
+  "homepage": "https://github.com/douban-girls/server#readme",
+  "dependencies": {
+    "graphql": "^0.10.5",
+    "koa": "^2.3.0",
+    "koa-graphql": "^0.7.1",
+    "koa-logger": "^3.0.1",
+    "koa-router": "^7.2.1",
+    "koa-session": "^5.4.0",
+    "nodemon": "^1.11.0",
+    "pg": "^7.0.2",
+    "redis": "^2.7.1"
+  }
+}
