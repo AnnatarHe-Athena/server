@@ -7,6 +7,7 @@ import (
 	"github.com/revel/revel"
 )
 
+// GraphQLSchema is root schema
 var GraphQLSchema graphql.Schema
 
 func getRootSchema() *graphql.Object {
@@ -34,10 +35,26 @@ func getRootSchema() *graphql.Object {
 					return *user, nil
 				},
 			},
+			"categories": &graphql.Field{
+				Type:        graphql.NewList(model.CategoryGraphqlSchema),
+				Description: "categories",
+				Resolve:     CategoriesResolver,
+			},
+			"girls": &graphql.Field{
+				Type:        graphql.NewList(model.GirlGraphqlSchema),
+				Description: "girls",
+				Args: graphql.FieldConfigArgument{
+					"offset": &graphql.ArgumentConfig{Type: graphql.Int},
+					"take":   &graphql.ArgumentConfig{Type: graphql.Int},
+					"from":   &graphql.ArgumentConfig{Type: graphql.Int},
+				},
+				Resolve: GirlsResolver,
+			},
 		},
 	})
 }
 
+// InitGraphQLSchema should init before app start
 func InitGraphQLSchema() {
 
 	rootQuery := getRootSchema()

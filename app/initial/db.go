@@ -22,7 +22,7 @@ func InitDB() {
 	pwd, _ := config.String("db.pwd")
 	dbname, _ := config.String("db.dbname")
 
-	dbPath := fmt.Sprintf("host=db user=%s password=%s dbname=%s sslmode=disable", username, pwd, dbname)
+	dbPath := fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable", username, pwd, dbname)
 	db, err := sql.Open("postgres", dbPath)
 	if err != nil {
 		panic(err)
@@ -40,7 +40,7 @@ func InitDB() {
 
 func InitRedis() {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})

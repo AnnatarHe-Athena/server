@@ -2,6 +2,8 @@ package model
 
 import (
 	"database/sql"
+
+	"github.com/graphql-go/graphql"
 )
 
 type Category struct {
@@ -9,6 +11,21 @@ type Category struct {
 	Name string `json:"name"`
 	Src  int    `json:"src"`
 }
+
+var CategoryGraphqlSchema = graphql.NewObject(graphql.ObjectConfig{
+	Name: "category",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type: graphql.ID,
+		},
+		"name": &graphql.Field{
+			Type: graphql.String,
+		},
+		"src": &graphql.Field{
+			Type: graphql.Int,
+		},
+	},
+})
 
 func FetchAllCategories(db *sql.DB) ([]Category, error) {
 	rows, err := db.Query("SELECT * FROM categories")
