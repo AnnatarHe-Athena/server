@@ -21,6 +21,7 @@ POST    /api/collection/:ids                    Collection.AddToCollection
 DELETE  /api/collection/:ids                    Collection.RemoveFromCollection
 
 GET     /graphql/v1                             GraphQLController.Fetch
+POST    /graphql/v1                             GraphQLController.FetchByPost
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
