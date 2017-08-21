@@ -16,3 +16,7 @@ func GirlsResolver(params graphql.ResolveParams) (interface{}, error) {
 
 	return girls, err
 }
+
+func CreateGirl(params graphql.ResolveParams) (interface{}, error) {
+	return nil, nil
+}

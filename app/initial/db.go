@@ -21,8 +21,15 @@ func InitDB() {
 	username, _ := config.String("db.username")
 	pwd, _ := config.String("db.pwd")
 	dbname, _ := config.String("db.dbname")
+	inDocker, _ := config.Bool("inDocker")
+	revel.INFO.Println(inDocker)
 
-	dbPath := fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable", username, pwd, dbname)
+	host := "localhost"
+	if inDocker {
+		host = "db"
+	}
+
+	dbPath := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", host, username, pwd, dbname)
 	db, err := sql.Open("postgres", dbPath)
 	if err != nil {
 		panic(err)
@@ -39,8 +46,17 @@ func InitDB() {
 }
 
 func InitRedis() {
+
+	inDocker, _ := revel.Config.Bool("inDocker")
+	host := "localhost"
+	if inDocker {
+		host = "redis"
+	}
+
+	host += ":6379"
+
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     host,
 		Password: "",
 		DB:       0,
 	})

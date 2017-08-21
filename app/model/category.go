@@ -28,7 +28,7 @@ var CategoryGraphqlSchema = graphql.NewObject(graphql.ObjectConfig{
 })
 
 func FetchAllCategories(db *sql.DB) ([]Category, error) {
-	rows, err := db.Query("SELECT * FROM categories")
+	rows, err := db.Query("SELECT id, name, src FROM categories")
 	defer rows.Close()
 	categories := []Category{}
 	if err != nil {

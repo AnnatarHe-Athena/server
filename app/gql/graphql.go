@@ -54,6 +54,37 @@ func getRootSchema() *graphql.Object {
 	})
 }
 
+func getRootMutation() *graphql.Object {
+
+	return graphql.NewObject(graphql.ObjectConfig{
+		Name: "RootMutation",
+		Fields: graphql.Fields{
+			"addUser": &graphql.Field{
+				Type:        model.UserGraph,
+				Description: "create a new user",
+				Args: graphql.FieldConfigArgument{
+					"email":    &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+					"username": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+					"avatar":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+					"password": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+					"bio":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				},
+				Resolve: CreateUserResolver,
+			},
+			"addGirls": &graphql.Field{
+				Type:        model.GirlGraphqlSchema,
+				Description: "add some Girls",
+				Args: graphql.FieldConfigArgument{
+					"user":     &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+					"img":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+					"category": &graphql.ArgumentConfig{Type: graphql.Int},
+				},
+				Resolve: CreateGirl,
+			},
+		},
+	})
+}
+
 // InitGraphQLSchema should init before app start
 func InitGraphQLSchema() {
 
