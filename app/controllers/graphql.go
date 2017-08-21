@@ -35,7 +35,6 @@ func (g *GraphQLController) FetchByPost() revel.Result {
 	var postedData pgd
 
 	if err := json.Unmarshal(g.Params.JSON, &postedData); err != nil {
-		revel.INFO.Println("parse data from user post error.", err)
 		return g.RenderJSON(utils.Response(500, nil, err))
 	}
 

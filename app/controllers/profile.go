@@ -22,7 +22,6 @@ func (p Profile) getToken(id int) (string, error) {
 	go func() {
 		timeout := time.Until(time.Now().AddDate(1, 0, 0))
 		if err := initial.Redis.Set("token:"+idStr, token, timeout).Err(); err != nil {
-			revel.INFO.Println(err)
 		}
 	}()
 

@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/douban-girls/douban-girls-server/app/initial"
 	"github.com/douban-girls/douban-girls-server/app/model"
 	"github.com/douban-girls/douban-girls-server/app/utils"
@@ -24,7 +22,6 @@ func (c Collection) AddToCollection(ids string) revel.Result {
 	var collections model.Collections
 	for _, id := range intIds {
 		collection := model.NewCollection(id, uid, -1)
-		fmt.Println(collection)
 		collections = append(collections, collection)
 	}
 	if err := collections.Save(initial.DB); err != nil {
