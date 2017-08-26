@@ -31,6 +31,7 @@ func init() {
 		revel.InterceptorFilter,       // Run interceptors around the action.
 		revel.CompressFilter,          // Compress the result.
 		filters.TokenFilter,
+		filters.IPFilter,
 		revel.ActionInvoker, // Invoke the action.
 	}
 
