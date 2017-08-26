@@ -58,7 +58,7 @@ func FetchGirls(db *sql.DB, cate, row, offset int) ([]Cell, error) {
 		var text string
 		var img string
 		var cate int
-		if err := rows.Scan(&id, &img, &text, &cate); err != nil {
+		if err := rows.Scan(&id, &text, &img, &cate); err != nil {
 			return nil, err
 		}
 		result = append(result, Cell{
