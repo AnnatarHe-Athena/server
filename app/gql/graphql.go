@@ -1,8 +1,8 @@
 package gql
 
 import (
-	"github.com/douban-girls/douban-girls-server/app/initial"
-	"github.com/douban-girls/douban-girls-server/app/model"
+	"github.com/douban-girls/server/app/initial"
+	"github.com/douban-girls/server/app/model"
 	"github.com/graphql-go/graphql"
 	"github.com/revel/revel"
 )
@@ -15,6 +15,12 @@ func getRootSchema() *graphql.Object {
 		// 不能有空格等特殊字符
 		Name: "RootSchema",
 		Fields: graphql.Fields{
+			"auth": &graphql.Field{
+				Type:        model.UserGraph,
+				Description: "user auth by email and password",
+				Args:        AuthArg,
+				Resolve:     AuthResolver,
+			},
 			"users": &graphql.Field{
 				Type:        model.UserGraph,
 				Description: "a user",
@@ -78,6 +84,7 @@ func getRootMutation() *graphql.Object {
 					"user":     &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 					"img":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 					"category": &graphql.ArgumentConfig{Type: graphql.Int},
+					"text":     &graphql.ArgumentConfig{Type: graphql.String},
 				},
 				Resolve: CreateGirl,
 			},
@@ -94,7 +101,7 @@ func InitGraphQLSchema() {
 	GraphQLSchema, err = graphql.NewSchema(graphql.SchemaConfig{
 		Query: rootQuery,
 		// TODO:
-		// Mutation:
+		Mutation: getRootMutation(),
 	})
 	if err != nil {
 		revel.INFO.Println(err)

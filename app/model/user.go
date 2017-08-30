@@ -19,18 +19,19 @@ type User struct {
 	Collections Collections `json:"collection"`
 }
 
+var AuthReturnGraph = graphql.NewObject(graphql.ObjectConfig{
+	Name: "auth",
+	Fields: graphql.Fields{
+		"token": &graphql.Field{Type: graphql.String},
+	},
+})
+
 var UserGraph = graphql.NewObject(graphql.ObjectConfig{
 	Name: "user",
 	Fields: graphql.Fields{
-		"id": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"email": &graphql.Field{
-			Type: graphql.String,
-		},
-		"name": &graphql.Field{
-			Type: graphql.String,
-		},
+		"id":    &graphql.Field{Type: graphql.Int},
+		"email": &graphql.Field{Type: graphql.String},
+		"name":  &graphql.Field{Type: graphql.String},
 		"pwd": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -38,15 +39,9 @@ var UserGraph = graphql.NewObject(graphql.ObjectConfig{
 			},
 			// ignore this field
 		},
-		"avatar": &graphql.Field{
-			Type: graphql.String,
-		},
-		"bio": &graphql.Field{
-			Type: graphql.String,
-		},
-		"token": &graphql.Field{
-			Type: graphql.String,
-		},
+		"avatar": &graphql.Field{Type: graphql.String},
+		"bio":    &graphql.Field{Type: graphql.String},
+		"token":  &graphql.Field{Type: graphql.String},
 		"collections": &graphql.Field{
 			// TODO:
 			Type: graphql.String,
@@ -80,8 +75,8 @@ func (u *User) Save(db *sql.DB) error {
 // Update just allow to update avatar, bio and token by userID
 func (u *User) Update(db *sql.DB) error {
 	_, err := db.Exec(`
-	UPDATE users SET avatar=$1, bio=$2, token=$3 WHERE id=$4
-	`, u.Avatar, u.Bio, u.Token, u.ID)
+	UPDATE users SET avatar=$1, bio=$2 WHERE id=$4
+	`, u.Avatar, u.Bio, u.ID)
 	return err
 }
 

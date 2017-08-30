@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 
-	"github.com/douban-girls/douban-girls-server/app/gql"
-	"github.com/douban-girls/douban-girls-server/app/utils"
+	"github.com/douban-girls/server/app/gql"
+	"github.com/douban-girls/server/app/utils"
 	"github.com/graphql-go/graphql"
 	"github.com/revel/revel"
 )

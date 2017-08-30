@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/douban-girls/douban-girls-server/app/filters"
-	"github.com/douban-girls/douban-girls-server/app/gql"
-	"github.com/douban-girls/douban-girls-server/app/initial"
+	"github.com/douban-girls/server/app/filters"
+	"github.com/douban-girls/server/app/gql"
+	"github.com/douban-girls/server/app/initial"
 	_ "github.com/lib/pq"
 	"github.com/revel/revel"
 )

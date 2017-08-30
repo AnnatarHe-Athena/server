@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"github.com/douban-girls/douban-girls-server/app/initial"
-	"github.com/douban-girls/douban-girls-server/app/model"
-	"github.com/douban-girls/douban-girls-server/app/utils"
+	"github.com/douban-girls/server/app/initial"
+	"github.com/douban-girls/server/app/model"
+	"github.com/douban-girls/server/app/utils"
 	"github.com/revel/revel"
 )
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/revel/revel"
 
-	"github.com/douban-girls/douban-girls-server/app/initial"
-	"github.com/douban-girls/douban-girls-server/app/model"
+	"github.com/douban-girls/server/app/initial"
+	"github.com/douban-girls/server/app/model"
 	"github.com/graphql-go/graphql"
 )
 
