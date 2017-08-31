@@ -16,6 +16,16 @@ type Cell struct {
 	CreatedBy int    `json:"createdBy"`
 }
 
+var GirlInputSchema = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name: "girl item",
+	Fields: graphql.Fields{
+		"img":       &graphql.Field{Type: graphql.String},
+		"text":      &graphql.Field{Type: graphql.String},
+		"cate":      &graphql.Field{Type: graphql.Int},
+		"createdBy": &graphql.Field{Type: graphql.Int},
+	},
+})
+
 var GirlGraphqlSchema = graphql.NewObject(graphql.ObjectConfig{
 	Name: "girl",
 	Fields: graphql.Fields{
@@ -29,14 +39,14 @@ var GirlGraphqlSchema = graphql.NewObject(graphql.ObjectConfig{
 
 type Cells []*Cell
 
-func (cs Cells) Save(db *sql.DB, userID int) error {
+func (cs Cells) Save(db *sql.DB) error {
 	stat, err := db.Prepare("INSERT INTO cells(img, text, cate, createdBy) VALUES($1, $2, $3, $4) ON CONFLICT (img) DO NOTHING RETURNING id")
 	if err != nil {
 		return err
 	}
 	for _, cell := range cs {
 		var id int
-		err := stat.QueryRow(cell.Img, cell.Text, cell.Cate, userID).Scan(&id)
+		err := stat.QueryRow(cell.Img, cell.Text, cell.Cate, cell.CreatedBy).Scan(&id)
 		cell.ID = id
 		if err != nil {
 			fmt.Println(err)

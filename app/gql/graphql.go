@@ -16,7 +16,7 @@ func getRootSchema() *graphql.Object {
 		Name: "RootSchema",
 		Fields: graphql.Fields{
 			"auth": &graphql.Field{
-				Type:        model.UserGraph,
+				Type:        model.AuthReturnGraph,
 				Description: "user auth by email and password",
 				Args:        AuthArg,
 				Resolve:     AuthResolver,
@@ -77,14 +77,12 @@ func getRootMutation() *graphql.Object {
 				},
 				Resolve: CreateUserResolver,
 			},
+			// mutation: { addGirls: (cells: [{ img: "url", text: "hello", cate: 1, createdBy: hello }])}
 			"addGirls": &graphql.Field{
 				Type:        model.GirlGraphqlSchema,
 				Description: "add some Girls",
 				Args: graphql.FieldConfigArgument{
-					"user":     &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
-					"img":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
-					"category": &graphql.ArgumentConfig{Type: graphql.Int},
-					"text":     &graphql.ArgumentConfig{Type: graphql.String},
+					"cells": &graphql.ArgumentConfig{Type: graphql.NewList(model.GirlInputSchema)},
 				},
 				Resolve: CreateGirl,
 			},

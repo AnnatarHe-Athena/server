@@ -1,6 +1,12 @@
 package gql
 
 import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
+
+	"github.com/revel/revel"
+
 	"github.com/douban-girls/server/app/initial"
 	"github.com/douban-girls/server/app/model"
 	"github.com/graphql-go/graphql"
@@ -27,9 +33,17 @@ func getGirlArgument(params graphql.ResolveParams, keys []string) (result map[st
 // CreateGirl will set a girl to database
 func CreateGirl(params graphql.ResolveParams) (interface{}, error) {
 
-	args := getGirlArgument(params, []string{"user", "img", "category", "text"})
-	item := model.Cell{
-		ID: args["user"].(int),
+	paramsStructed := bytes.Buffer{}
+	cellsData := model.Cells{}
+	gob.NewDecoder(&paramsStructed).Decode(params.Args["cells"])
+	if err := json.Unmarshal(paramsStructed.Bytes(), &cellsData); err != nil {
+		revel.INFO.Println("error when parse the girls cell list", err)
+		return nil, err
 	}
-	return nil, nil
+
+	if err := cellsData.Save(initial.DB); err != nil {
+		revel.INFO.Println("error when save girls cell list:", err)
+		return nil, err
+	}
+	return cellsData, nil
 }
