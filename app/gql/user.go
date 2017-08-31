@@ -5,8 +5,6 @@ import (
 	"github.com/douban-girls/server/app/model"
 	"github.com/douban-girls/server/app/utils"
 	"github.com/graphql-go/graphql"
-
-	"golang.org/x/crypto/scrypt"
 )
 
 var AuthArg = graphql.FieldConfigArgument{
@@ -21,9 +19,9 @@ func CreateUserResolver(params graphql.ResolveParams) (interface{}, error) {
 	avatar := params.Args["avatar"].(string)
 	bio := params.Args["bio"].(string)
 
-	scrypt.Keys
+	realPasword := utils.GenPassword(password)
 
-	user := model.NewUser(0, email, username, password, avatar, bio, "")
+	user := model.NewUser(0, email, username, realPasword, avatar, bio, "")
 	err := user.Save(initial.DB)
 	if err != nil {
 		return nil, err
