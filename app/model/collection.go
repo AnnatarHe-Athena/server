@@ -2,6 +2,8 @@ package model
 
 import (
 	"database/sql"
+
+	"github.com/graphql-go/graphql"
 )
 
 type Collection struct {
@@ -9,6 +11,15 @@ type Collection struct {
 	Cell  int `json:"cell"`
 	Owner int `json:"owner"`
 }
+
+var CollectionGraphQLSchema = graphql.NewObject(graphql.ObjectConfig{
+	Name: "collection Item",
+	Fields: graphql.Fields{
+		"id":    &graphql.Field{Type: graphql.ID},
+		"cell":  &graphql.Field{Type: graphql.Int},
+		"owner": &graphql.Field{Type: graphql.Int},
+	},
+})
 
 type Collections []*Collection
 
@@ -43,4 +54,21 @@ func (cs Collections) Save(db *sql.DB) error {
 		}
 	}
 	return nil
+}
+
+func FetchUserCollectionBy(db *sql.DB, id int) (Collections, error) {
+	rows, err := db.Query("SELECT DISTINCT ON (collections.cell) id, cell, owner FROM users LEFT JOIN collections ON users.id=collections.owner WHERE users.id=$1", id)
+
+	var collections Collections
+
+	for rows.Next() {
+		var id, cell, owner int
+		if err := rows.Scan(&id, &cell, &owner); err != nil {
+			return collections, err
+		}
+
+		collections = append(collections, NewCollection(cell, owner, id))
+	}
+
+	return collections, err
 }

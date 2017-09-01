@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/douban-girls/douban-girls-server/app/schema"
+	"github.com/douban-girls/server/app/schema"
 	"github.com/go-redis/redis"
 	"github.com/revel/revel"
 )

@@ -8,6 +8,8 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+// User struct type
+// Depreacted: just json type, please use graphql type
 type User struct {
 	ID          int         `json:"id"`
 	Email       string      `json:"email"`
@@ -19,34 +21,31 @@ type User struct {
 	Collections Collections `json:"collection"`
 }
 
+// AuthReturnGraph will return auth request as this
+var AuthReturnGraph = graphql.NewObject(graphql.ObjectConfig{
+	Name: "auth",
+	Fields: graphql.Fields{
+		"token": &graphql.Field{Type: graphql.String},
+		"id":    &graphql.Field{Type: graphql.ID},
+	},
+})
+
+// UserGraph will return this type when request a user profile in graphql
 var UserGraph = graphql.NewObject(graphql.ObjectConfig{
 	Name: "user",
 	Fields: graphql.Fields{
-		"id": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"email": &graphql.Field{
-			Type: graphql.String,
-		},
-		"name": &graphql.Field{
-			Type: graphql.String,
-		},
+		"id":    &graphql.Field{Type: graphql.ID},
+		"email": &graphql.Field{Type: graphql.String},
+		"name":  &graphql.Field{Type: graphql.String},
 		"pwd": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return "", nil
 			},
-			// ignore this field
 		},
-		"avatar": &graphql.Field{
-			Type: graphql.String,
-		},
-		"bio": &graphql.Field{
-			Type: graphql.String,
-		},
-		"token": &graphql.Field{
-			Type: graphql.String,
-		},
+		"avatar": &graphql.Field{Type: graphql.String},
+		"bio":    &graphql.Field{Type: graphql.String},
+		"token":  &graphql.Field{Type: graphql.String},
 		"collections": &graphql.Field{
 			// TODO:
 			Type: graphql.String,
@@ -54,6 +53,7 @@ var UserGraph = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// NewUser will return an User instance
 func NewUser(id int, email, name, pwd, avatar, bio, token string) *User {
 	return &User{
 		ID:     id,
@@ -62,7 +62,6 @@ func NewUser(id int, email, name, pwd, avatar, bio, token string) *User {
 		Pwd:    pwd,
 		Avatar: avatar,
 		Bio:    bio,
-		Token:  token,
 	}
 }
 
@@ -80,11 +79,12 @@ func (u *User) Save(db *sql.DB) error {
 // Update just allow to update avatar, bio and token by userID
 func (u *User) Update(db *sql.DB) error {
 	_, err := db.Exec(`
-	UPDATE users SET avatar=$1, bio=$2, token=$3 WHERE id=$4
-	`, u.Avatar, u.Bio, u.Token, u.ID)
+	UPDATE users SET avatar=$1, bio=$2 WHERE id=$3
+	`, u.Avatar, u.Bio, u.ID)
 	return err
 }
 
+// FetchUserBy userID
 func FetchUserBy(db *sql.DB, id int) (*User, error) {
 	rows, err := db.Query("SELECT DISTINCT ON (collections.cell) * FROM users LEFT JOIN collections ON users.id=collections.owner WHERE users.id=$1", id)
 	if err != nil {
@@ -97,8 +97,9 @@ func FetchUserBy(db *sql.DB, id int) (*User, error) {
 	return users[0], nil
 }
 
+// UserAuth receive email and password and return user profile
 func UserAuth(db *sql.DB, email, pwd string) (*User, error) {
-	rows, err := db.Query("SELECT DISTINCT ON (collections.cell) * FROM users LEFT JOIN collection ON users.id=collections.owner WHERE users.email=$1 AND users.pwd=$2", email, pwd)
+	rows, err := db.Query("SELECT id, email, name, pwd, avatar, bio FROM users users WHERE users.email=$1 AND users.pwd=$2", email, pwd)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +107,11 @@ func UserAuth(db *sql.DB, email, pwd string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if len(users) == 0 {
+		return nil, errors.New("auth fail. email or password incorrect")
+	}
+
 	return users[0], nil
 }
 
@@ -114,9 +120,9 @@ func getUsersInfoFrom(rows *sql.Rows) ([]*User, error) {
 	var users []*User
 	for rows.Next() {
 		var id int
-		var email, name, pwd, avatar, bio, token string
+		var email, name, pwd, avatar, bio string
 		var collectionID, collectionCell, collectionOwner int
-		if err := rows.Scan(&id, &email, &name, &pwd, &avatar, &bio, &token, &collectionID, &collectionCell, &collectionOwner); err != nil {
+		if err := rows.Scan(&id, &email, &name, &pwd, &avatar, &bio, &collectionID, &collectionCell, &collectionOwner); err != nil {
 			return nil, err
 		}
 		collection := NewCollection(collectionCell, collectionOwner, collectionID)
@@ -128,7 +134,6 @@ func getUsersInfoFrom(rows *sql.Rows) ([]*User, error) {
 			Pwd:         pwd,
 			Avatar:      avatar,
 			Bio:         bio,
-			Token:       token,
 			Collections: collections,
 		}
 		users = append(users, user)

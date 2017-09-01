@@ -1,13 +1,25 @@
 package gql
 
 import (
-	"github.com/douban-girls/douban-girls-server/app/initial"
-	"github.com/douban-girls/douban-girls-server/app/model"
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
+	"errors"
+
+	"github.com/revel/revel"
+
+	"github.com/douban-girls/server/app/initial"
+	"github.com/douban-girls/server/app/model"
+	"github.com/douban-girls/server/app/utils"
 	"github.com/graphql-go/graphql"
 )
 
 // GirlsResolver is graphql resolver
 func GirlsResolver(params graphql.ResolveParams) (interface{}, error) {
+	isPair, err := utils.IsTokenPair(utils.GetController(params))
+	if !isPair || err != nil {
+		return nil, errors.New("token not pair")
+	}
 	// TODO: add redis cache here
 	from := params.Args["from"].(int)
 	take := params.Args["take"].(int)
@@ -17,6 +29,27 @@ func GirlsResolver(params graphql.ResolveParams) (interface{}, error) {
 	return girls, err
 }
 
+func getGirlArgument(params graphql.ResolveParams, keys []string) (result map[string]string) {
+	for _, val := range keys {
+		result[val] = params.Args[val].(string)
+	}
+	return result
+}
+
+// CreateGirl will set a girl to database
 func CreateGirl(params graphql.ResolveParams) (interface{}, error) {
-	return nil, nil
+
+	paramsStructed := bytes.Buffer{}
+	cellsData := model.Cells{}
+	gob.NewDecoder(&paramsStructed).Decode(params.Args["cells"])
+	if err := json.Unmarshal(paramsStructed.Bytes(), &cellsData); err != nil {
+		revel.INFO.Println("error when parse the girls cell list", err)
+		return nil, err
+	}
+
+	if err := cellsData.Save(initial.DB); err != nil {
+		revel.INFO.Println("error when save girls cell list:", err)
+		return nil, err
+	}
+	return cellsData, nil
 }

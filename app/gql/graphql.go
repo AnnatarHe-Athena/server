@@ -1,8 +1,7 @@
 package gql
 
 import (
-	"github.com/douban-girls/douban-girls-server/app/initial"
-	"github.com/douban-girls/douban-girls-server/app/model"
+	"github.com/douban-girls/server/app/model"
 	"github.com/graphql-go/graphql"
 	"github.com/revel/revel"
 )
@@ -15,25 +14,19 @@ func getRootSchema() *graphql.Object {
 		// 不能有空格等特殊字符
 		Name: "RootSchema",
 		Fields: graphql.Fields{
+			"auth": &graphql.Field{
+				Type:        model.AuthReturnGraph,
+				Description: "user auth by email and password",
+				Args:        AuthArg,
+				Resolve:     AuthResolver,
+			},
 			"users": &graphql.Field{
 				Type:        model.UserGraph,
 				Description: "a user",
 				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type: graphql.Int,
-					},
+					"id": &graphql.ArgumentConfig{Type: graphql.Int},
 				},
-				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-					id, ok := params.Args["id"].(int)
-					if !ok {
-						return model.User{}, nil
-					}
-					user, err := model.FetchUserBy(initial.DB, id)
-					if err != nil {
-						return model.User{}, nil
-					}
-					return *user, nil
-				},
+				Resolve: QueryUserResolver,
 			},
 			"categories": &graphql.Field{
 				Type:        graphql.NewList(model.CategoryGraphqlSchema),
@@ -49,6 +42,14 @@ func getRootSchema() *graphql.Object {
 					"from":   &graphql.ArgumentConfig{Type: graphql.Int},
 				},
 				Resolve: GirlsResolver,
+			},
+			"collections": &graphql.Field{
+				Type:        graphql.NewList(model.CollectionGraphQLSchema),
+				Description: "collections",
+				Args: graphql.FieldConfigArgument{
+					"userID": &graphql.ArgumentConfig{Type: graphql.Int},
+				},
+				Resolve: QueryCollectionResolver,
 			},
 		},
 	})
@@ -71,13 +72,12 @@ func getRootMutation() *graphql.Object {
 				},
 				Resolve: CreateUserResolver,
 			},
+			// mutation: { addGirls: (cells: [{ img: "url", text: "hello", cate: 1, createdBy: hello }])}
 			"addGirls": &graphql.Field{
 				Type:        model.GirlGraphqlSchema,
 				Description: "add some Girls",
 				Args: graphql.FieldConfigArgument{
-					"user":     &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
-					"img":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
-					"category": &graphql.ArgumentConfig{Type: graphql.Int},
+					"cells": &graphql.ArgumentConfig{Type: graphql.NewList(model.GirlInputSchema)},
 				},
 				Resolve: CreateGirl,
 			},
@@ -94,7 +94,7 @@ func InitGraphQLSchema() {
 	GraphQLSchema, err = graphql.NewSchema(graphql.SchemaConfig{
 		Query: rootQuery,
 		// TODO:
-		// Mutation:
+		Mutation: getRootMutation(),
 	})
 	if err != nil {
 		revel.INFO.Println(err)

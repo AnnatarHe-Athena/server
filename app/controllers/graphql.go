@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"context"
 
-	"github.com/douban-girls/douban-girls-server/app/gql"
-	"github.com/douban-girls/douban-girls-server/app/utils"
+	"github.com/douban-girls/server/app/gql"
+	"github.com/douban-girls/server/app/utils"
 	"github.com/graphql-go/graphql"
 	"github.com/revel/revel"
 )
@@ -35,6 +36,7 @@ func (g *GraphQLController) FetchByPost() revel.Result {
 	var postedData pgd
 
 	if err := json.Unmarshal(g.Params.JSON, &postedData); err != nil {
+		revel.INFO.Println(string(g.Params.JSON))
 		return g.RenderJSON(utils.Response(500, nil, err))
 	}
 
@@ -42,6 +44,7 @@ func (g *GraphQLController) FetchByPost() revel.Result {
 		Schema:         gql.GraphQLSchema,
 		RequestString:  postedData.Query,
 		VariableValues: postedData.Variables,
+		Context: context.WithValue(context.Background(), "controller", g)
 	}
 	result := graphql.Do(params)
 	return g.RenderJSON(result)
