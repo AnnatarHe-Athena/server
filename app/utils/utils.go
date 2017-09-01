@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"strings"
 
+	"github.com/graphql-go/graphql"
+
 	"strconv"
 
 	"github.com/revel/revel"
@@ -51,4 +53,9 @@ func GetUID(request *revel.Request) int {
 		return -1
 	}
 	return uid
+}
+
+// GetController will return controller by params
+func GetController(params graphql.ResolveParams) *revel.Controller {
+	return params.Context.Value("controller").(*revel.Controller)
 }

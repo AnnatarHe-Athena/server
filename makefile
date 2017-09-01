@@ -1,5 +1,3 @@
-PATH := /go/bin:$(PATH)
-
 deps:
 	@go get github.com/revel/cmd/revel
 	@go get github.com/graphql-go/graphql
@@ -14,5 +12,5 @@ echo:
 
 build:
 	@cd /tmp
-	@GOOS=linux GOARCH=amd64 revel package github.com/douban-girls/server
-	@echo "please to /tmp directory to scp this file to your server"
+	@GOOS=linux GOARCH=amd64 revel package github.com/douban-girls/server prod
+	@echo "please to this project directory to scp this file to your server"

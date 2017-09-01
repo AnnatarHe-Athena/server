@@ -35,7 +35,7 @@ func GenToken(id int) (string, error) {
 
 	token := idStr + "|" + Md5Encode(time.Now().Format("20060102150405"))
 	go func() {
-		timeout := time.Until(time.Now().AddDate(1, 0, 0))
+		timeout := time.Duration(time.Minute * 60 * 24)
 		if err := initial.Redis.Set("token:"+idStr, token, timeout).Err(); err != nil {
 			revel.INFO.Println("error when set token", err)
 		}
@@ -50,7 +50,7 @@ func GenPassword(pwd string) string {
 	realPasword, err := scrypt.Key([]byte(pwd), []byte(salt), 16384, 8, 1, 32)
 	if err != nil {
 		revel.INFO.Println("error in crypt password", err)
-		return ""
+		return pwd
 	}
 	return string(realPasword)
 }

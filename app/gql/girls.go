@@ -4,16 +4,22 @@ import (
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
+	"errors"
 
 	"github.com/revel/revel"
 
 	"github.com/douban-girls/server/app/initial"
 	"github.com/douban-girls/server/app/model"
+	"github.com/douban-girls/server/app/utils"
 	"github.com/graphql-go/graphql"
 )
 
 // GirlsResolver is graphql resolver
 func GirlsResolver(params graphql.ResolveParams) (interface{}, error) {
+	isPair, err := utils.IsTokenPair(utils.GetController(params))
+	if !isPair || err != nil {
+		return nil, errors.New("token not pair")
+	}
 	// TODO: add redis cache here
 	from := params.Args["from"].(int)
 	take := params.Args["take"].(int)

@@ -1,6 +1,9 @@
 package gql
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/douban-girls/server/app/initial"
 	"github.com/douban-girls/server/app/model"
 	"github.com/douban-girls/server/app/utils"
@@ -19,6 +22,10 @@ func CreateUserResolver(params graphql.ResolveParams) (interface{}, error) {
 	avatar := params.Args["avatar"].(string)
 	bio := params.Args["bio"].(string)
 
+	if !strings.Contains(email, "@") {
+		err := errors.New("email valiation fail")
+		return nil, err
+	}
 	realPasword := utils.GenPassword(password)
 
 	user := model.NewUser(0, email, username, realPasword, avatar, bio, "")
@@ -43,4 +50,16 @@ func AuthResolver(params graphql.ResolveParams) (interface{}, error) {
 		"token": token,
 		"id":    user.ID,
 	}, nil
+}
+
+func QueryUserResolver(params graphql.ResolveParams) (interface{}, error) {
+	id, ok := params.Args["id"].(int)
+	if !ok {
+		return model.User{}, nil
+	}
+	user, err := model.FetchUserBy(initial.DB, id)
+	if err != nil {
+		return model.User{}, nil
+	}
+	return *user, nil
 }

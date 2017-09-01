@@ -1,7 +1,6 @@
 package gql
 
 import (
-	"github.com/douban-girls/server/app/initial"
 	"github.com/douban-girls/server/app/model"
 	"github.com/graphql-go/graphql"
 	"github.com/revel/revel"
@@ -25,21 +24,9 @@ func getRootSchema() *graphql.Object {
 				Type:        model.UserGraph,
 				Description: "a user",
 				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type: graphql.Int,
-					},
+					"id": &graphql.ArgumentConfig{Type: graphql.Int},
 				},
-				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-					id, ok := params.Args["id"].(int)
-					if !ok {
-						return model.User{}, nil
-					}
-					user, err := model.FetchUserBy(initial.DB, id)
-					if err != nil {
-						return model.User{}, nil
-					}
-					return *user, nil
-				},
+				Resolve: QueryUserResolver,
 			},
 			"categories": &graphql.Field{
 				Type:        graphql.NewList(model.CategoryGraphqlSchema),
@@ -55,6 +42,14 @@ func getRootSchema() *graphql.Object {
 					"from":   &graphql.ArgumentConfig{Type: graphql.Int},
 				},
 				Resolve: GirlsResolver,
+			},
+			"collections": &graphql.Field{
+				Type:        graphql.NewList(model.CollectionGraphQLSchema),
+				Description: "collections",
+				Args: graphql.FieldConfigArgument{
+					"userID": &graphql.ArgumentConfig{Type: graphql.Int},
+				},
+				Resolve: QueryCollectionResolver,
 			},
 		},
 	})
