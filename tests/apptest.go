@@ -6,9 +6,11 @@ import (
 
 type AppTest struct {
 	testing.TestSuite
+	token string
 }
 
 func (t *AppTest) Before() {
+	// 登录，获取token
 	println("Set up")
 }
 

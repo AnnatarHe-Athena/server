@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"encoding/json"
 	"context"
+	"encoding/json"
 
 	"github.com/douban-girls/server/app/gql"
 	"github.com/douban-girls/server/app/utils"
@@ -35,6 +35,8 @@ type pgd struct {
 func (g *GraphQLController) FetchByPost() revel.Result {
 	var postedData pgd
 
+	revel.INFO.Println(string(g.Params.JSON))
+
 	if err := json.Unmarshal(g.Params.JSON, &postedData); err != nil {
 		revel.INFO.Println(string(g.Params.JSON))
 		return g.RenderJSON(utils.Response(500, nil, err))
@@ -44,7 +46,7 @@ func (g *GraphQLController) FetchByPost() revel.Result {
 		Schema:         gql.GraphQLSchema,
 		RequestString:  postedData.Query,
 		VariableValues: postedData.Variables,
-		Context: context.WithValue(context.Background(), "controller", g)
+		Context:        context.WithValue(context.Background(), "controller", g.Controller),
 	}
 	result := graphql.Do(params)
 	return g.RenderJSON(result)

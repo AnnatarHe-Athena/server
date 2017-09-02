@@ -92,8 +92,7 @@ func InitGraphQLSchema() {
 	var err error
 
 	GraphQLSchema, err = graphql.NewSchema(graphql.SchemaConfig{
-		Query: rootQuery,
-		// TODO:
+		Query:    rootQuery,
 		Mutation: getRootMutation(),
 	})
 	if err != nil {

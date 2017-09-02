@@ -43,7 +43,7 @@ func Sha256Encode(resource string) string {
 
 // GetUID will return uid from header
 func GetUID(request *revel.Request) int {
-	token := request.Header.Get("douban-girls-token")
+	token := request.Header.Get("athena-token")
 	if token == "" {
 		return -1
 	}

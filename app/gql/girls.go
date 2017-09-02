@@ -16,6 +16,8 @@ import (
 
 // GirlsResolver is graphql resolver
 func GirlsResolver(params graphql.ResolveParams) (interface{}, error) {
+	revel.INFO.Println("in girls resolver")
+
 	isPair, err := utils.IsTokenPair(utils.GetController(params))
 	if !isPair || err != nil {
 		return nil, errors.New("token not pair")

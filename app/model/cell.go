@@ -16,7 +16,7 @@ type Cell struct {
 	CreatedBy int    `json:"createdBy"`
 }
 
-var GirlInputSchema = graphql.NewInputObject(graphql.InputObjectConfig{
+var GirlInputSchema = graphql.NewObject(graphql.ObjectConfig{
 	Name: "girl item",
 	Fields: graphql.Fields{
 		"img":       &graphql.Field{Type: graphql.String},
