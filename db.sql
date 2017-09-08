@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS collections (
 
 ALTER TABLE cells ADD COLUMN createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ADD COLUMN createdBy integer REFERENCES users (id),
-    ADD COLUMN updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+    ADD COLUMN updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 ALTER TABLE categories ADD COLUMN createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ADD COLUMN updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
@@ -39,3 +39,39 @@ INSERT INTO users(email, name, pwd, avatar, bio) VALUES('null.dbmeinv@athena-ann
 ('null.weibo@athena-anna.com', 'weibo', 'pwd', 'null', 'weibo'),
 ('null.wechat@athena-anna.com', 'wechat', 'pwd', 'null', 'wechat'),
 ('null.gank@athena-anna.com', 'gank', 'pwd', 'null', 'gank');
+
+
+-- 2017-10-06 添加权限控制字段
+-- 2  -> public 共有的，谁都可以看
+-- 3  -> 受保护的，只有发布者自己能看
+-- 4+ -> 暂未定义
+ALTER TABLE cells ADD COLUMN premission SMALLINT NOT NULL DEFAULT 2,
+    ADD COLUMN likes BIGINT NOT NULL DEFAULT 0;
+INSERT INTO users(email, name, pwd, avatar, bio) VALUES('null.zhihu@athena-anna.com', 'zhihu', 'pwd', 'null', 'zhihu');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT categories.id, categories.name, categories.src, count(cells.id) AS count FROM categories, cells WHERE categories.id = cells.cate GROUP BY categories.id;
+
+
+
+
+

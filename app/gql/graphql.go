@@ -43,6 +43,7 @@ func getRootSchema() *graphql.Object {
 				},
 				Resolve: GirlsResolver,
 			},
+			// 有 bug. ios 测出来的
 			"collections": &graphql.Field{
 				Type:        graphql.NewList(model.CollectionGraphQLSchema),
 				Description: "collections",
@@ -72,6 +73,7 @@ func getRootMutation() *graphql.Object {
 				},
 				Resolve: CreateUserResolver,
 			},
+			// 有 bug. ios 测出来的
 			// mutation: { addGirls: (cells: [{ img: "url", text: "hello", cate: 1, createdBy: hello }])}
 			"addGirls": &graphql.Field{
 				Type:        model.GirlGraphqlSchema,
@@ -81,18 +83,24 @@ func getRootMutation() *graphql.Object {
 				},
 				Resolve: CreateGirl,
 			},
+			"addCollection": &graphql.Field{
+				Type:        graphql.Boolean,
+				Description: "add collection",
+				Args: graphql.FieldConfigArgument{
+					// mutation: { addCollection: ( cells: [1,2,3] ) }
+					"cells": &graphql.ArgumentConfig{Type: graphql.NewList(graphql.Int)},
+				},
+				Resolve: AddCollection,
+			},
 		},
 	})
 }
 
 // InitGraphQLSchema should init before app start
 func InitGraphQLSchema() {
-
-	rootQuery := getRootSchema()
 	var err error
-
 	GraphQLSchema, err = graphql.NewSchema(graphql.SchemaConfig{
-		Query:    rootQuery,
+		Query:    getRootSchema(),
 		Mutation: getRootMutation(),
 	})
 	if err != nil {

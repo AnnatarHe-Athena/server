@@ -56,7 +56,7 @@ func (cs Cells) Save(db *sql.DB) error {
 }
 
 func fetchGilsFromDatabase(db *sql.DB, cate, row, offset int) ([]Cell, error) {
-	rows, err := initial.DB.Query("SELECT id, text, img, cate FROM cells WHERE cate=$1 ORDER BY id DESC LIMIT $2 OFFSET $3", cate, row, offset)
+	rows, err := initial.DB.Query("SELECT id, text, img, cate FROM cells WHERE cate=$1 AND premission=2 ORDER BY id DESC LIMIT $2 OFFSET $3", cate, row, offset)
 	defer rows.Close()
 
 	if err != nil {
