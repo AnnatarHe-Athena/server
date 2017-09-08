@@ -1,7 +1,11 @@
 package gql
 
 import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	"errors"
+	"strconv"
 
 	"github.com/douban-girls/server/app/initial"
 	"github.com/douban-girls/server/app/model"
@@ -25,4 +29,39 @@ func QueryCollectionResolver(params graphql.ResolveParams) (interface{}, error) 
 	}
 
 	return collections, nil
+}
+
+func AddCollection(params graphql.ResolveParams) (interface{}, error) {
+	controller := utils.GetController(params)
+	isPair, err := utils.IsTokenPair(controller)
+	if !isPair || err != nil {
+		return nil, errors.New("token not pair")
+	}
+
+	userID, err := strconv.Atoi(controller.Session["userID"])
+	if err != nil {
+		return nil, err
+	}
+
+	cellsStructed := bytes.Buffer{}
+	var cellIDs []int
+	gob.NewDecoder(&cellsStructed).Decode(params.Args["cells"])
+	if err := json.Unmarshal(cellsStructed.Bytes(), &cellIDs); err != nil {
+		revel.INFO.Println("error when parse the girls collection list", err)
+		return nil, err
+	}
+
+	var userIDs []int
+	var fakeIDs []int
+
+	for i := 0; i < 11; i++ {
+		userIDs = append(userIDs, userID)
+		fakeIDs = append(fakeIDs, i)
+	}
+
+	if err := model.NewCollections(fakeIDs, cellIDs, userIDs).Save(initial.DB); err != nil {
+		revel.INFO.Println("error occean in save collection step")
+		return nil, err
+	}
+	return true, nil
 }
