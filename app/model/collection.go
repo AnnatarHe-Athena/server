@@ -3,6 +3,8 @@ package model
 import (
 	"database/sql"
 
+	"github.com/revel/revel"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -56,19 +58,15 @@ func (cs Collections) Save(db *sql.DB) error {
 	return nil
 }
 
-func FetchUserCollectionBy(db *sql.DB, id int) (Collections, error) {
-	rows, err := db.Query("SELECT DISTINCT ON (collections.cell) id, cell, owner FROM users LEFT JOIN collections ON users.id=collections.owner WHERE users.id=$1", id)
+func FetchUserCollectionBy(db *sql.DB, id, from, size int) (Cells, error) {
+	rows, err := db.Query("SELECT cells.id, cells.img, cells.text FROM cells, collections WHERE collections.cell = cells.id AND cells.owner = $1 AND cells.id > $2 LIMIT $3", id, from, size)
 
-	var collections Collections
-
-	for rows.Next() {
-		var id, cell, owner int
-		if err := rows.Scan(&id, &cell, &owner); err != nil {
-			return collections, err
-		}
-
-		collections = append(collections, NewCollection(cell, owner, id))
+	if err != nil {
+		revel.INFO.Println(err)
+		return nil, err
 	}
+
+	collections := GetCellsFromRows(rows)
 
 	return collections, err
 }

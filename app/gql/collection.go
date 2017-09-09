@@ -14,14 +14,20 @@ import (
 	"github.com/revel/revel"
 )
 
+// QueryCollectionResolver will return collection by user
 func QueryCollectionResolver(params graphql.ResolveParams) (interface{}, error) {
 	isPair, err := utils.IsTokenPair(utils.GetController(params))
 	if !isPair || err != nil {
 		return nil, errors.New("token not pair")
 	}
 
-	userID := params.Args["userID"].(int)
-	collections, err := model.FetchUserCollectionBy(initial.DB, userID)
+	userID := params.Args["id"].(int)
+	from := params.Args["id"].(int)
+	size := params.Args["id"].(int)
+	if size > 50 {
+		return nil, errors.New("max size is 50")
+	}
+	collections, err := model.FetchUserCollectionBy(initial.DB, userID, from, size)
 
 	if err != nil {
 		revel.INFO.Println(err)

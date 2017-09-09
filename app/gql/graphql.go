@@ -45,10 +45,15 @@ func getRootSchema() *graphql.Object {
 			},
 			// 有 bug. ios 测出来的
 			"collections": &graphql.Field{
-				Type:        graphql.NewList(model.CollectionGraphQLSchema),
+				Type:        graphql.NewList(model.GirlGraphqlSchema),
 				Description: "collections",
 				Args: graphql.FieldConfigArgument{
-					"userID": &graphql.ArgumentConfig{Type: graphql.Int},
+					// from who
+					"id": &graphql.ArgumentConfig{Type: graphql.Int},
+					// from where(user.id)
+					"from": &graphql.ArgumentConfig{Type: graphql.Int},
+					// how much you want
+					"size": &graphql.ArgumentConfig{Type: graphql.Int},
 				},
 				Resolve: QueryCollectionResolver,
 			},

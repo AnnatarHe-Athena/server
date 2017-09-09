@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/revel/revel"
+
 	"github.com/douban-girls/server/app/initial"
 	"github.com/graphql-go/graphql"
 )
@@ -55,7 +57,7 @@ func (cs Cells) Save(db *sql.DB) error {
 	return nil
 }
 
-func fetchGilsFromDatabase(db *sql.DB, cate, row, offset int) ([]Cell, error) {
+func fetchGilsFromDatabase(db *sql.DB, cate, row, offset int) (Cells, error) {
 	rows, err := initial.DB.Query("SELECT id, text, img, cate FROM cells WHERE cate=$1 AND premission=2 ORDER BY id DESC LIMIT $2 OFFSET $3", cate, row, offset)
 	defer rows.Close()
 
@@ -63,27 +65,31 @@ func fetchGilsFromDatabase(db *sql.DB, cate, row, offset int) ([]Cell, error) {
 		return nil, err
 	}
 
-	result := []Cell{}
+	result := GetCellsFromRows(rows)
+	return result, nil
+}
 
+func GetCellsFromRows(rows *sql.Rows) (result Cells) {
 	for rows.Next() {
 		var id int
 		var text string
 		var img string
 		var cate int
 		if err := rows.Scan(&id, &text, &img, &cate); err != nil {
-			return nil, err
+			revel.INFO.Println(err)
+			return
 		}
-		result = append(result, Cell{
+		result = append(result, &Cell{
 			ID:   id,
 			Img:  img,
 			Text: text,
 			Cate: cate,
 		})
 	}
-	return result, nil
+	return
 }
 
-func FetchGirls(db *sql.DB, cate, row, offset int) ([]Cell, error) {
+func FetchGirls(db *sql.DB, cate, row, offset int) (Cells, error) {
 	// 需要保证返回的是最后几条数据，还没想好怎么存 redis 里面
 	return fetchGilsFromDatabase(db, cate, row, offset)
 }
