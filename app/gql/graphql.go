@@ -81,7 +81,7 @@ func getRootMutation() *graphql.Object {
 			// 有 bug. ios 测出来的
 			// mutation: { addGirls: (cells: [{ img: "url", text: "hello", cate: 1, createdBy: hello }])}
 			"addGirls": &graphql.Field{
-				Type:        model.GirlGraphqlSchema,
+				Type:        graphql.NewList(model.GirlGraphqlSchema),
 				Description: "add some Girls",
 				Args: graphql.FieldConfigArgument{
 					"cells": &graphql.ArgumentConfig{Type: graphql.NewList(model.GirlInputSchema)},

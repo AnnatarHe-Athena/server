@@ -18,13 +18,12 @@ type Cell struct {
 	CreatedBy int    `json:"createdBy"`
 }
 
-var GirlInputSchema = graphql.NewObject(graphql.ObjectConfig{
-	Name: "girl item",
-	Fields: graphql.Fields{
-		"img":       &graphql.Field{Type: graphql.String},
-		"text":      &graphql.Field{Type: graphql.String},
-		"cate":      &graphql.Field{Type: graphql.Int},
-		"createdBy": &graphql.Field{Type: graphql.Int},
+var GirlInputSchema = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name: "CellInput",
+	Fields: graphql.InputObjectConfigFieldMap{
+		"img":  &graphql.InputObjectFieldConfig{Type: graphql.String},
+		"text": &graphql.InputObjectFieldConfig{Type: graphql.String},
+		"cate": &graphql.InputObjectFieldConfig{Type: graphql.Int},
 	},
 })
 
@@ -58,10 +57,13 @@ func (cs Cells) Save(db *sql.DB) error {
 }
 
 func fetchGilsFromDatabase(db *sql.DB, cate, row, offset int) (Cells, error) {
+	revel.INFO.Println("read from db")
 	rows, err := initial.DB.Query("SELECT id, text, img, cate FROM cells WHERE cate=$1 AND premission=2 ORDER BY id DESC LIMIT $2 OFFSET $3", cate, row, offset)
 	defer rows.Close()
 
 	if err != nil {
+		revel.INFO.Println("fetch girls from database error")
+		revel.INFO.Println(err)
 		return nil, err
 	}
 

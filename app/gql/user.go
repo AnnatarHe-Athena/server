@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/revel/revel"
+
 	"github.com/douban-girls/server/app/initial"
 	"github.com/douban-girls/server/app/model"
 	"github.com/douban-girls/server/app/utils"
@@ -37,7 +39,10 @@ func CreateUserResolver(params graphql.ResolveParams) (interface{}, error) {
 }
 
 func AuthResolver(params graphql.ResolveParams) (interface{}, error) {
-	user, err := model.UserAuth(initial.DB, params.Args["email"].(string), params.Args["password"].(string))
+	email := params.Args["email"].(string)
+	pwd := utils.GenPassword(params.Args["password"].(string))
+	revel.INFO.Println(pwd)
+	user, err := model.UserAuth(initial.DB, email, pwd)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"crypto/sha256"
 	"errors"
+	"io"
 	"strconv"
 	"time"
 
@@ -52,6 +54,16 @@ func GenToken(id int) (string, error) {
 
 // GenPassword will return a very complex password
 func GenPassword(pwd string) string {
+	return sha256Encode(pwd)
+}
+
+func sha256Encode(pwd string) string {
+	h := sha256.New()
+	io.WriteString(h, pwd)
+	return string(h.Sum(nil))
+}
+
+func scryptEncode(pwd string) string {
 	salt := revel.Config.StringDefault("salt", "default")
 	realPasword, err := scrypt.Key([]byte(pwd), []byte(salt), 16384, 8, 1, 32)
 	if err != nil {
@@ -59,4 +71,5 @@ func GenPassword(pwd string) string {
 		return pwd
 	}
 	return string(realPasword)
+
 }

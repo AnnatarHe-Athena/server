@@ -1,8 +1,6 @@
 package gql
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"errors"
 
@@ -38,18 +36,45 @@ func getGirlArgument(params graphql.ResolveParams, keys []string) (result map[st
 	return result
 }
 
+type customCell struct {
+	Cells []struct {
+		Data map[string]string
+		// img  string
+		// id   int
+		// text string
+	}
+}
+
 // CreateGirl will set a girl to database
 func CreateGirl(params graphql.ResolveParams) (interface{}, error) {
 
-	paramsStructed := bytes.Buffer{}
-	cellsData := model.Cells{}
-	gob.NewDecoder(&paramsStructed).Decode(params.Args["cells"])
-	if err := json.Unmarshal(paramsStructed.Bytes(), &cellsData); err != nil {
+	// FIXME: 数据结构有问题，需要重新做 array 分析
+	var cellsData customCell
+	cells, e := json.Marshal(map[string]interface{}{"cells": params.Args["cells"]})
+	if e != nil {
+		revel.INFO.Println(e)
+	}
+	revel.INFO.Println(string(cells))
+	if err := json.Unmarshal(cells, &cellsData); err != nil {
+		revel.INFO.Println(params.Args["cells"])
 		revel.INFO.Println("error when parse the girls cell list", err)
 		return nil, err
 	}
 
-	if err := cellsData.Save(initial.DB); err != nil {
+	var resolvedCells model.Cells
+	revel.INFO.Println(cellsData)
+
+	for val := range cellsData.Cells {
+		revel.INFO.Println(val, cellsData.Cells, cellsData.Cells[val], cellsData.Cells[val].Data)
+		cell := &model.Cell{
+		// Img:  cellsData.Cells[val].data["img"].(string),
+		// Text: cellsData.Cells[val].data["text"].(string),
+		// Cate: cellsData.Cells[val].data["cate"].(int),
+		}
+		resolvedCells = append(resolvedCells, cell)
+	}
+
+	if err := resolvedCells.Save(initial.DB); err != nil {
 		revel.INFO.Println("error when save girls cell list:", err)
 		return nil, err
 	}

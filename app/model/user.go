@@ -86,7 +86,8 @@ func (u *User) Update(db *sql.DB) error {
 
 // FetchUserBy userID
 func FetchUserBy(db *sql.DB, id int) (*User, error) {
-	rows, err := db.Query("SELECT DISTINCT ON (collections.cell) * FROM users LEFT JOIN collections ON users.id=collections.owner WHERE users.id=$1", id)
+	// FIXME: 需要排查，这里有错误
+	rows, err := db.Query("SELECT id, email, name, pwd, avatar, bio FROM users users WHERE users.id=$1", id)
 	if err != nil {
 		return nil, err
 	}
