@@ -122,20 +122,16 @@ func getUsersInfoFrom(rows *sql.Rows) ([]*User, error) {
 	for rows.Next() {
 		var id int
 		var email, name, pwd, avatar, bio string
-		var collectionID, collectionCell, collectionOwner int
-		if err := rows.Scan(&id, &email, &name, &pwd, &avatar, &bio, &collectionID, &collectionCell, &collectionOwner); err != nil {
+		if err := rows.Scan(&id, &email, &name, &pwd, &avatar, &bio); err != nil {
 			return nil, err
 		}
-		collection := NewCollection(collectionCell, collectionOwner, collectionID)
-		collections := Collections{collection}
 		user := &User{
-			ID:          id,
-			Email:       email,
-			Name:        name,
-			Pwd:         pwd,
-			Avatar:      avatar,
-			Bio:         bio,
-			Collections: collections,
+			ID:     id,
+			Email:  email,
+			Name:   name,
+			Pwd:    pwd,
+			Avatar: avatar,
+			Bio:    bio,
 		}
 		users = append(users, user)
 	}

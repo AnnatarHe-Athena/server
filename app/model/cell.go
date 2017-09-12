@@ -2,11 +2,11 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/revel/revel"
 
 	"github.com/douban-girls/server/app/initial"
+	"github.com/douban-girls/server/app/utils"
 	"github.com/graphql-go/graphql"
 )
 
@@ -41,16 +41,19 @@ var GirlGraphqlSchema = graphql.NewObject(graphql.ObjectConfig{
 type Cells []*Cell
 
 func (cs Cells) Save(db *sql.DB) error {
-	stat, err := db.Prepare("INSERT INTO cells(img, text, cate, createdBy) VALUES($1, $2, $3, $4) ON CONFLICT (img) DO NOTHING RETURNING id")
+	stat, err := db.Prepare("INSERT INTO cells(img, text, cate, premission) VALUES($1, $2, $3, 2) ON CONFLICT (img) DO NOTHING RETURNING id")
 	if err != nil {
+		utils.Log("error when save cells", err)
 		return err
 	}
 	for _, cell := range cs {
 		var id int
-		err := stat.QueryRow(cell.Img, cell.Text, cell.Cate, cell.CreatedBy).Scan(&id)
+		err := stat.QueryRow(cell.Img, cell.Text, cell.Cate).Scan(&id)
 		cell.ID = id
+		revel.INFO.Println(*cell)
 		if err != nil {
-			fmt.Println(err)
+			utils.Log("error when save cells", err)
+			return err
 		}
 	}
 	return nil

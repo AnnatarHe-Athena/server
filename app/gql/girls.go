@@ -48,35 +48,38 @@ type customCell struct {
 // CreateGirl will set a girl to database
 func CreateGirl(params graphql.ResolveParams) (interface{}, error) {
 
-	// FIXME: 数据结构有问题，需要重新做 array 分析
-	var cellsData customCell
-	cells, e := json.Marshal(map[string]interface{}{"cells": params.Args["cells"]})
-	if e != nil {
-		revel.INFO.Println(e)
-	}
-	revel.INFO.Println(string(cells))
-	if err := json.Unmarshal(cells, &cellsData); err != nil {
-		revel.INFO.Println(params.Args["cells"])
-		revel.INFO.Println("error when parse the girls cell list", err)
-		return nil, err
-	}
+	revel.INFO.Println(params.Args["cells"])
 
 	var resolvedCells model.Cells
-	revel.INFO.Println(cellsData)
+	cellsInterface := params.Args["cells"].([]interface{})
+	cellsByte, err := json.Marshal(cellsInterface)
+	if err != nil {
+		utils.Log("marshal the input json", err)
+		return resolvedCells, err
+	}
 
-	for val := range cellsData.Cells {
-		revel.INFO.Println(val, cellsData.Cells, cellsData.Cells[val], cellsData.Cells[val].Data)
-		cell := &model.Cell{
-		// Img:  cellsData.Cells[val].data["img"].(string),
-		// Text: cellsData.Cells[val].data["text"].(string),
-		// Cate: cellsData.Cells[val].data["cate"].(int),
-		}
-		resolvedCells = append(resolvedCells, cell)
+	if err := json.Unmarshal(cellsByte, &resolvedCells); err != nil {
+		utils.Log("unmarshal the input json to Data.Cells", err)
+		return resolvedCells, err
 	}
 
 	if err := resolvedCells.Save(initial.DB); err != nil {
-		revel.INFO.Println("error when save girls cell list:", err)
+		utils.Log("error occean when save cells", err)
 		return nil, err
 	}
-	return cellsData, nil
+
+	var cellIDs []int
+	var uid = utils.GetUserIDFromSession(params)
+
+	for _, cell := range resolvedCells {
+		cellIDs = append(cellIDs, cell.ID)
+	}
+
+	// can be set to goroutine
+	if err := model.NewCollectionJustCell(cellIDs, uid).Save(initial.DB); err != nil {
+		utils.Log("error when user save to collection", err)
+		return nil, err
+	}
+
+	return resolvedCells, nil
 }

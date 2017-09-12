@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"io"
 	"strconv"
@@ -60,7 +61,7 @@ func GenPassword(pwd string) string {
 func sha256Encode(pwd string) string {
 	h := sha256.New()
 	io.WriteString(h, pwd)
-	return string(h.Sum(nil))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 func scryptEncode(pwd string) string {

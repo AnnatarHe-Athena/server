@@ -33,6 +33,16 @@ func NewCollection(cell, owner, id int) *Collection {
 	}
 }
 
+func NewCollectionJustCell(cells []int, owner int) Collections {
+	var collections Collections
+	for index := range cells {
+		collection := &Collection{Cell: cells[index], Owner: owner}
+		collections = append(collections, collection)
+	}
+	return collections
+
+}
+
 func NewCollections(ids, cells, owners []int) Collections {
 	var collections Collections
 	for index := range ids {

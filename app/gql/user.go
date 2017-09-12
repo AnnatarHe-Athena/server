@@ -48,6 +48,9 @@ func AuthResolver(params graphql.ResolveParams) (interface{}, error) {
 	}
 
 	token, err := utils.GenToken(user.ID)
+
+	controller := utils.GetController(params)
+	controller.Session["userID"] = string(user.ID)
 	if err != nil {
 		return nil, err
 	}

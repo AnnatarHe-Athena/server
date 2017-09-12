@@ -55,7 +55,28 @@ func GetUID(request *revel.Request) int {
 	return uid
 }
 
+func GetUserIDFromSession(params graphql.ResolveParams) int {
+	if revel.DevMode {
+		return 5
+	}
+
+	controller := GetController(params)
+	uidStr := controller.Session["userID"]
+	uid, err := strconv.Atoi(uidStr)
+	if err != nil {
+		return -1
+	}
+	return uid
+}
+
 // GetController will return controller by params
 func GetController(params graphql.ResolveParams) *revel.Controller {
 	return params.Context.Value("controller").(*revel.Controller)
+}
+
+// Log just a log wrapper
+func Log(tag string, err error) {
+	if err != nil {
+		revel.INFO.Println(tag, err)
+	}
 }
