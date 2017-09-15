@@ -14,7 +14,7 @@ type GraphQLController struct {
 	*revel.Controller
 }
 
-// is Get method for fetch data ^_^
+// Fetch is Get method for fetch data ^_^
 func (g *GraphQLController) Fetch() revel.Result {
 	query := g.Params.Get("query")
 

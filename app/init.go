@@ -42,6 +42,7 @@ func init() {
 	revel.OnAppStart(func() {
 		initial.InitDB()
 		initial.InitRedis()
+		initial.RunInterceptors()
 		gql.InitGraphQLSchema()
 	})
 	// revel.OnAppStart(FillCache)
