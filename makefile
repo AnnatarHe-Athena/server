@@ -11,6 +11,6 @@ echo:
 	@echo $(revel)
 
 build:
-	@cd /tmp
 	@GOOS=linux GOARCH=amd64 revel package github.com/douban-girls/server prod
+	@mv server.tar.gz /tmp
 	@echo "please to this project directory to scp this file to your server"

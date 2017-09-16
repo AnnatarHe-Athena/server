@@ -24,12 +24,11 @@ func IsTokenPair(c *revel.Controller) (bool, error) {
 
 	innerToken, err := initial.Redis.Get("token:" + userID).Result()
 
-	revel.INFO.Println(userID)
 	revel.INFO.Println(innerToken, token)
 
-	// if revel.DevMode {
-	// 	return true, nil
-	// }
+	if revel.DevMode {
+		return true, nil
+	}
 
 	if err != nil || token != innerToken {
 		revel.INFO.Println(err)
