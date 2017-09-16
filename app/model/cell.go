@@ -21,9 +21,10 @@ type Cell struct {
 var GirlInputSchema = graphql.NewInputObject(graphql.InputObjectConfig{
 	Name: "CellInput",
 	Fields: graphql.InputObjectConfigFieldMap{
-		"img":  &graphql.InputObjectFieldConfig{Type: graphql.String},
-		"text": &graphql.InputObjectFieldConfig{Type: graphql.String},
-		"cate": &graphql.InputObjectFieldConfig{Type: graphql.Int},
+		"img":        &graphql.InputObjectFieldConfig{Type: graphql.String},
+		"text":       &graphql.InputObjectFieldConfig{Type: graphql.String},
+		"cate":       &graphql.InputObjectFieldConfig{Type: graphql.Int},
+		"premission": &graphql.InputObjectFieldConfig{Type: graphql.Int},
 	},
 })
 

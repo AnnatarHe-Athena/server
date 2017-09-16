@@ -22,8 +22,8 @@ func QueryCollectionResolver(params graphql.ResolveParams) (interface{}, error) 
 	}
 
 	userID := params.Args["id"].(int)
-	from := params.Args["id"].(int)
-	size := params.Args["id"].(int)
+	from := params.Args["from"].(int)
+	size := params.Args["size"].(int)
 	if size > 50 {
 		return nil, errors.New("max size is 50")
 	}

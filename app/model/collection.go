@@ -69,7 +69,7 @@ func (cs Collections) Save(db *sql.DB) error {
 }
 
 func FetchUserCollectionBy(db *sql.DB, id, from, size int) (Cells, error) {
-	rows, err := db.Query("SELECT cells.id, cells.img, cells.text FROM cells, collections WHERE collections.cell = cells.id AND collections.owner = $1 AND cells.id > $2 LIMIT $3", id, from, size)
+	rows, err := db.Query("SELECT cells.id, cells.text, cells.img, cells.cate FROM cells, collections WHERE collections.cell = cells.id AND collections.owner = $1 AND cells.id > $2 LIMIT $3", id, from, size)
 
 	if err != nil {
 		revel.INFO.Println(err)
