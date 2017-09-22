@@ -49,7 +49,7 @@ ALTER TABLE cells ADD COLUMN premission SMALLINT NOT NULL DEFAULT 2,
     ADD COLUMN likes BIGINT NOT NULL DEFAULT 0;
 INSERT INTO users(email, name, pwd, avatar, bio) VALUES('null.zhihu@athena-anna.com', 'zhihu', 'pwd', 'null', 'zhihu');
 -- 123456 测试数据
-INSERT INTO users(email, name, pwd, avatar, bio) VALUES('i@annatarhe.com', 'AnnatarHe', '7c4a8d09ca3762af61e59520943dc26494f8941b', 'null', 'make the world a better place');
+INSERT INTO users(email, name, pwd, avatar, bio) VALUES('i@annatarhe.com', 'AnnatarHe', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'null', 'make the world a better place');
 
 
 

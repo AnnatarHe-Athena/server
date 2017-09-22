@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/revel/revel"
+
 	"github.com/douban-girls/server/app/initial"
 	"github.com/douban-girls/server/app/model"
 	"github.com/douban-girls/server/app/utils"
@@ -40,18 +42,23 @@ func CreateUserResolver(params graphql.ResolveParams) (interface{}, error) {
 func AuthResolver(params graphql.ResolveParams) (interface{}, error) {
 	email := params.Args["email"].(string)
 	pwd := utils.GenPassword(params.Args["password"].(string))
+	revel.INFO.Println(params.Args["password"], pwd)
 	user, err := model.UserAuth(initial.DB, email, pwd)
 	if err != nil {
+		revel.INFO.Println(err)
 		return nil, err
 	}
 
+	revel.INFO.Println(user.ID, user.Email)
+
 	token, err := utils.GenToken(user.ID)
+	if err != nil {
+		revel.INFO.Println(err)
+		return nil, err
+	}
 
 	controller := utils.GetController(params)
 	controller.Session["userID"] = strconv.Itoa(user.ID)
-	if err != nil {
-		return nil, err
-	}
 	return map[string]interface{}{
 		"token": token,
 		"id":    user.ID,
