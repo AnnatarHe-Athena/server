@@ -6,7 +6,7 @@
 
 ## usage
 
-1. 请首先 clone 此仓库。
+1. 请首先 clone 此仓库。路径一定要在 `$GOPATH/src/github.com/AnnatarHe-Athena/` 中。
 
 2. 若在 Unix 环境中，请安装相应的 make tool 以及 golang，然后执行 `make deps`
 
