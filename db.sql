@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS collections (
 
 ALTER TABLE cells ADD COLUMN createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ADD COLUMN createdBy integer REFERENCES users (id),
-    ADD COLUMN updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE categories ADD COLUMN createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ADD COLUMN updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
@@ -52,6 +52,10 @@ INSERT INTO users(email, name, pwd, avatar, bio) VALUES('null.zhihu@athena-anna.
 INSERT INTO users(email, name, pwd, avatar, bio) VALUES('i@annatarhe.com', 'AnnatarHe', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'null', 'make the world a better place');
 
 
+-- 2017-10-12 添加 from_url 字段，用来证明从哪里添加的
+--                               用户 id 是多少
+ALTER TABLE cells ADD COLUMN from_url VARCHAR(255) NOT NULL DEFAULT '',
+    ADD COLUMN from_id VARCHAR(255) NOT NULL DEFAULT '';
 
 
 
@@ -71,7 +75,9 @@ INSERT INTO users(email, name, pwd, avatar, bio) VALUES('i@annatarhe.com', 'Anna
 
 
 
-SELECT categories.id, categories.name, categories.src, count(cells.id) AS count FROM categories, cells WHERE categories.id = cells.cate GROUP BY categories.id;
+
+
+# SELECT categories.id, categories.name, categories.src, count(cells.id) AS count FROM categories, cells WHERE categories.id = cells.cate GROUP BY categories.id;
 
 
 
