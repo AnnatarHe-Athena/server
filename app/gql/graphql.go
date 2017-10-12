@@ -88,6 +88,7 @@ func getRootMutation() *graphql.Object {
 				},
 				Resolve: CreateGirl,
 			},
+			// TODO: add like button
 			"addCollection": &graphql.Field{
 				Type:        graphql.Boolean,
 				Description: "add collection",

@@ -11,11 +11,12 @@ import (
 )
 
 type Cell struct {
-	ID        int    `json:"id"`
-	Img       string `json:"img"`
-	Text      string `json:"text"`
-	Cate      int    `json:"cate"`
-	CreatedBy int    `json:"createdBy"`
+	ID         int    `json:"id"`
+	Img        string `json:"img"`
+	Text       string `json:"text"`
+	Premission int    `json:"premission"`
+	Cate       int    `json:"cate"`
+	CreatedBy  int    `json:"createdBy"`
 }
 
 var GirlInputSchema = graphql.NewInputObject(graphql.InputObjectConfig{
@@ -42,14 +43,14 @@ var GirlGraphqlSchema = graphql.NewObject(graphql.ObjectConfig{
 type Cells []*Cell
 
 func (cs Cells) Save(db *sql.DB) error {
-	stat, err := db.Prepare("INSERT INTO cells(img, text, cate, premission) VALUES($1, $2, $3, 2) ON CONFLICT (img) DO NOTHING RETURNING id")
+	stat, err := db.Prepare("INSERT INTO cells(img, text, cate, premission) VALUES($1, $2, $3, $4) ON CONFLICT (img) DO NOTHING RETURNING id")
 	if err != nil {
 		utils.Log("error when save cells", err)
 		return err
 	}
 	for _, cell := range cs {
 		var id int
-		err := stat.QueryRow(cell.Img, cell.Text, cell.Cate).Scan(&id)
+		err := stat.QueryRow(cell.Img, cell.Text, cell.Cate, cell.Premission).Scan(&id)
 		cell.ID = id
 		revel.INFO.Println(*cell)
 		if err != nil {
