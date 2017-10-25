@@ -58,6 +58,18 @@ ALTER TABLE cells ADD COLUMN from_url VARCHAR(255) NOT NULL DEFAULT '',
     ADD COLUMN from_id VARCHAR(255) NOT NULL DEFAULT '';
 
 
+-- 2017-10-15 version check for mobile platform
+CREATE TABLE IF NOT EXISTS versions(
+    id SERIAL PRIMARY KEY,
+    platform VARCHAR(32) NOT NULL DEFAULT '',
+    version INTEGER NOT NULL DEFAULT 0,
+    published_by VARCHAR(32) NOT NULL DEFAULT '',
+    link VARCHAR(255) NOT NULL DEFAULT '',
+    description TEXT NOT NULL DEFAULT '',
+    title VARCHAR(32) NOT NULL DEFAULT ''
+);
+
+
 
 
 
