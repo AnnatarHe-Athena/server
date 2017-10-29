@@ -37,13 +37,14 @@ var MobAppVersionGraphQLSchema = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var MobAppVersionGraphQLArgs = graphql.FieldConfigArgument{}
+// MobAppVersionGraphQLArgs is arguments of version
+var MobAppVersionGraphQLArgs = graphql.FieldConfigArgument{
+	"platform":   &graphql.ArgumentConfig{Type: graphql.String},
+	"getLastOne": &graphql.ArgumentConfig{Type: graphql.Boolean},
+}
 
-// fetch all versions from database
-func FetchAllVersions(db *sql.DB) (versions []MobAppVersion, err error) {
-	fetchSQL := "SELECT id, platform, version, published_by, link, descriptions, title from versions"
-
-	rows, err := db.Query(fetchSQL)
+func getVersionFromDatabase(rows *sql.Rows) (versions []MobAppVersion, err error) {
+	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -65,4 +66,31 @@ func FetchAllVersions(db *sql.DB) (versions []MobAppVersion, err error) {
 	}
 
 	return versions, nil
+
+}
+
+const baseFetchSQL = "SELECT id, platform, version, published_by, link, descriptions, title from versions"
+
+// FetchAllVersions : fetch all versions from database
+func FetchAllVersions(db *sql.DB) (versions []MobAppVersion, err error) {
+	rows, e := db.Query(baseFetchSQL)
+	if e != nil {
+		return nil, e
+	}
+	return getVersionFromDatabase(rows)
+}
+
+// FetchPlatformSpecialOne : has where conditions
+func FetchPlatformSpecialOne(db *sql.DB, platform string, getLastOne bool) (versions []MobAppVersion, err error) {
+	fetchSQL := baseFetchSQL + " where platform=? ORDER BY createdat DESC LIMIT ?"
+	limit := 1
+	if !getLastOne {
+		limit = 100
+	}
+	rows, e := db.Query(fetchSQL, platform, limit)
+	if e != nil {
+		return nil, e
+	}
+	return getVersionFromDatabase(rows)
+
 }

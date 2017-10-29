@@ -58,10 +58,11 @@ func getRootSchema() *graphql.Object {
 				Resolve: QueryCollectionResolver,
 			},
 			"versions": &graphql.Field{
-				Type: graphql.NewList(model.MobAppVersion),
+				Type:        graphql.NewList(model.MobAppVersionGraphQLSchema),
 				Description: "versions",
-				Args: 
-			}
+				Args:        model.MobAppVersionGraphQLArgs,
+				Resolve:     PlatformVersionResolver,
+			},
 		},
 	})
 }
