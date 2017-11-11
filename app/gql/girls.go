@@ -83,3 +83,50 @@ func CreateGirl(params graphql.ResolveParams) (interface{}, error) {
 
 	return resolvedCells, nil
 }
+
+func RemoveGirl(params graphql.ResolveParams) (interface{}, error) {
+
+	revel.INFO.Println(params.Args["cells"])
+
+	controller := utils.GetController(params)
+	isPair, err := utils.IsTokenPair(controller)
+	if !isPair || err != nil {
+		return nil, errors.New("token not pair")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	var cellIDs []int
+
+	cellsInterface := params.Args["cells"].([]interface{})
+	revel.INFO.Println("cellInterface", cellsInterface)
+	cellsByte, err := json.Marshal(cellsInterface)
+	if err != nil {
+		utils.Log("marshal the input json", err)
+		return cellIDs, err
+	}
+
+	revel.AppLog.Info(string(cellsByte))
+
+	if err := json.Unmarshal(cellsByte, &cellIDs); err != nil {
+		utils.Log("unmarshal the input json to Data.Cells", err)
+		return cellIDs, err
+	}
+
+	go func() {
+		for _, cellID := range cellIDs {
+			revel.INFO.Println(cellID)
+			model.CellHide(cellID)
+		}
+	}()
+
+	isOk := okReturn{IsOk: true}
+
+	return isOk, nil
+}
+
+type okReturn struct {
+	IsOk bool `json:"isOk"`
+}

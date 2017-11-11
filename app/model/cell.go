@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/revel/revel"
 
@@ -74,6 +75,12 @@ func fetchGilsFromDatabase(db *sql.DB, cate, row, offset int) (Cells, error) {
 
 	result := GetCellsFromRows(rows)
 	return result, nil
+}
+
+func CellHide(id int) {
+	if _, err := initial.DB.Query("UPDATE cells SET premission=3, updatedat=$1 WHERE id=$2", time.Now(), id); err != nil {
+		revel.INFO.Println(err)
+	}
 }
 
 func GetCellsFromRows(rows *sql.Rows) (result Cells) {

@@ -104,6 +104,15 @@ func getRootMutation() *graphql.Object {
 				},
 				Resolve: AddCollection,
 			},
+			"removeGirl": &graphql.Field{
+				Type:        model.CollectionAddedReturnSchemaType,
+				Description: "remove girl cell",
+				Args: graphql.FieldConfigArgument{
+					// mutation: { removeGirl: ( cells: [1,2,3] ) }
+					"cells": &graphql.ArgumentConfig{Type: graphql.NewList(graphql.Int)},
+				},
+				Resolve: RemoveGirl,
+			},
 		},
 	})
 }
