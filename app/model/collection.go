@@ -15,11 +15,18 @@ type Collection struct {
 }
 
 var CollectionGraphQLSchema = graphql.NewObject(graphql.ObjectConfig{
-	Name: "collection Item",
+	Name: "collectionItem",
 	Fields: graphql.Fields{
 		"id":    &graphql.Field{Type: graphql.ID},
 		"cell":  &graphql.Field{Type: graphql.Int},
 		"owner": &graphql.Field{Type: graphql.Int},
+	},
+})
+
+var CollectionAddedReturnSchemaType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "addCollectionReturnType",
+	Fields: graphql.Fields{
+		"isOk": &graphql.Field{Type: graphql.Boolean},
 	},
 })
 

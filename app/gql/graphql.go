@@ -96,7 +96,7 @@ func getRootMutation() *graphql.Object {
 			},
 			// TODO: add like button
 			"addCollection": &graphql.Field{
-				Type:        graphql.Boolean,
+				Type:        model.CollectionAddedReturnSchemaType,
 				Description: "add collection",
 				Args: graphql.FieldConfigArgument{
 					// mutation: { addCollection: ( cells: [1,2,3] ) }
