@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/scrypt"
@@ -22,13 +23,18 @@ func IsTokenPair(c *revel.Controller) (bool, error) {
 
 	userID := c.Session["userID"]
 
+	// app 客户端并没有 session， 所以一定会报错。那么这里从 token 取得 userID
+	if userID == "" {
+		userID = strings.Split(token, "|")[0]
+	}
+
 	innerToken, err := initial.Redis.Get("token:" + userID).Result()
 
 	revel.INFO.Println(innerToken, token)
 
-	if revel.DevMode {
-		return true, nil
-	}
+	// if revel.DevMode {
+	// 	return true, nil
+	// }
 
 	if err != nil || token != innerToken {
 		revel.INFO.Println(err)
