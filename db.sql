@@ -71,8 +71,32 @@ CREATE TABLE IF NOT EXISTS versions(
 
 
 
+-- 2017-11-21  添加新的三种类型
+INSERT INTO categories(name, src) VALUES('知乎', 31), ('微博', 32), ('豆瓣', 33) ON CONFLICT (src) DO NOTHING;
+INSERT INTO users(email, name, pwd, avatar, bio) VALUES('null.douban@athena-anna.com', 'douban', 'pwd', 'null', 'douban');
+ALTER TABLE cells ADD COLUMN content TEXT NOT NULL DEFAULT 2,
 
 
+-- 2017-11-21 tags
+CREATE TABLE IF NOT EXISTS tags(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL DEFAULT '',
+    desc VARCHAR(255) NOT NULL DEFAULT '',
+    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- begin
+-- tags 和 girls 多对多的关系，用来渐渐替换掉 categories 
+-- 暂时并未启用，有大块时间的时候，写个工具，做一套数据迁移
+CREATE TABLE NOT EXISTS tags_girls(
+    id SERIAL PRIMARY KEY,
+    tag_id INTEGER REFERENCES tags(id),
+    cell_id INTEGER REFERENCES cells(id)
+)
+
+--- end
 
 
 
