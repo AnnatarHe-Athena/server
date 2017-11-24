@@ -19,6 +19,11 @@ import (
 // if return false. DO NOT return correct result
 // JUST FOR GraphQL arch
 func IsTokenPair(c *revel.Controller) (bool, error) {
+
+	if revel.DevMode {
+		return true, nil
+	}
+
 	token := c.Request.Header.Get("athena-token")
 
 	userID := c.Session["userID"]
@@ -31,10 +36,6 @@ func IsTokenPair(c *revel.Controller) (bool, error) {
 	innerToken, err := initial.Redis.Get("token:" + userID).Result()
 
 	revel.INFO.Println(innerToken, token)
-
-	// if revel.DevMode {
-	// 	return true, nil
-	// }
 
 	if err != nil || token != innerToken {
 		revel.INFO.Println(err)

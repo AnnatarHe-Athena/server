@@ -73,8 +73,11 @@ CREATE TABLE IF NOT EXISTS versions(
 
 -- 2017-11-21  添加新的三种类型
 INSERT INTO categories(name, src) VALUES('知乎', 31), ('微博', 32), ('豆瓣', 33) ON CONFLICT (src) DO NOTHING;
+
 INSERT INTO users(email, name, pwd, avatar, bio) VALUES('null.douban@athena-anna.com', 'douban', 'pwd', 'null', 'douban');
-ALTER TABLE cells ADD COLUMN content TEXT NOT NULL DEFAULT 2,
+ALTER TABLE cells ADD COLUMN content TEXT NOT NULL DEFAULT '';
+
+INSERT INTO categories(name, src) VALUES('废弃', 51) ON CONFLICT (src) DO NOTHING;
 
 
 -- 2017-11-21 tags
