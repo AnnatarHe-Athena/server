@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"time"
 
 	"github.com/revel/revel"
@@ -67,6 +68,16 @@ func (cs Cells) Save(db *sql.DB) error {
 	return nil
 }
 
+func (cs Cells) EncodeImageURL() {
+	for _, cell := range cs {
+		cell.EncodeImageURL()
+	}
+}
+
+func (cell *Cell) EncodeImageURL() {
+	cell.Img = base64.StdEncoding.EncodeToString([]byte(cell.Img))
+}
+
 func fetchGilsFromDatabase(db *sql.DB, cate, row, offset, premission int) (Cells, error) {
 	revel.INFO.Println("read from db")
 	rows, err := initial.DB.Query("SELECT id, text, img, cate, premission, from_url, from_id, createdby FROM cells WHERE cate=$1 AND premission=$2 ORDER BY id DESC LIMIT $3 OFFSET $4", cate, premission, row, offset)
@@ -116,6 +127,7 @@ func GetCellsFromRows(rows *sql.Rows) (result Cells) {
 			FromURL:    fromURL,
 			CreatedBy:  createdByUnix,
 		})
+		result.EncodeImageURL()
 	}
 	return
 }
@@ -132,7 +144,7 @@ func FetchOneGirl(db *sql.DB, id int) *Cell {
 
 	createdByUnix := getTimestamp(createdBy)
 
-	return &Cell{
+	cell := &Cell{
 		ID:         id,
 		Img:        img,
 		Text:       text,
@@ -142,6 +154,9 @@ func FetchOneGirl(db *sql.DB, id int) *Cell {
 		FromID:     fromID,
 		CreatedBy:  createdByUnix,
 	}
+
+	cell.EncodeImageURL()
+	return cell
 }
 
 func getTimestamp(createdBy string) (createdByUnix int64) {
