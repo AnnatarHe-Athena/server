@@ -67,9 +67,9 @@ func (cs Cells) Save(db *sql.DB) error {
 	return nil
 }
 
-func fetchGilsFromDatabase(db *sql.DB, cate, row, offset int) (Cells, error) {
+func fetchGilsFromDatabase(db *sql.DB, cate, row, offset, premission int) (Cells, error) {
 	revel.INFO.Println("read from db")
-	rows, err := initial.DB.Query("SELECT id, text, img, cate, premission, from_url, from_id, createdby FROM cells WHERE cate=$1 AND premission=2 ORDER BY id DESC LIMIT $2 OFFSET $3", cate, row, offset)
+	rows, err := initial.DB.Query("SELECT id, text, img, cate, premission, from_url, from_id, createdby FROM cells WHERE cate=$1 AND premission=$2 ORDER BY id DESC LIMIT $3 OFFSET $4", cate, premission, row, offset)
 	defer rows.Close()
 
 	if err != nil {
@@ -156,7 +156,7 @@ func getTimestamp(createdBy string) (createdByUnix int64) {
 
 }
 
-func FetchGirls(db *sql.DB, cate, row, offset int) (Cells, error) {
+func FetchGirls(db *sql.DB, cate, row, offset, premission int) (Cells, error) {
 	// 需要保证返回的是最后几条数据，还没想好怎么存 redis 里面
-	return fetchGilsFromDatabase(db, cate, row, offset)
+	return fetchGilsFromDatabase(db, cate, row, offset, premission)
 }

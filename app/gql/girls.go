@@ -28,7 +28,12 @@ func GirlsResolver(params graphql.ResolveParams) (interface{}, error) {
 	from := params.Args["from"].(int)
 	take := params.Args["take"].(int)
 	offset := params.Args["offset"].(int)
-	girls, err := model.FetchGirls(initial.DB, from, take, offset)
+	hideOnly := params.Args["hideOnly"].(bool)
+	premission := 2
+	if hideOnly {
+		premission = 3
+	}
+	girls, err := model.FetchGirls(initial.DB, from, take, offset, premission)
 
 	return girls, err
 }
