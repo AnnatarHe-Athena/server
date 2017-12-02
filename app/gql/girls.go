@@ -3,6 +3,10 @@ package gql
 import (
 	"encoding/json"
 	"errors"
+	"strings"
+
+	"github.com/douban-girls/qiniu-migrate/config"
+	"github.com/douban-girls/qiniu-migrate/qn"
 
 	"github.com/revel/revel"
 
@@ -101,6 +105,7 @@ func RemoveGirl(params graphql.ResolveParams) (interface{}, error) {
 	var cellIDs []int
 
 	cellsInterface := params.Args["cells"].([]interface{})
+	shouldToRemove := params.Args["toRemove"].(bool)
 	revel.INFO.Println("cellInterface", cellsInterface)
 	cellsByte, err := json.Marshal(cellsInterface)
 	if err != nil {
@@ -115,10 +120,32 @@ func RemoveGirl(params graphql.ResolveParams) (interface{}, error) {
 		return cellIDs, err
 	}
 
+	// check this user has real delete permission or not
+	if shouldToRemove {
+		user, err := model.FetchUserBy(initial.DB, utils.GetUID(controller.Request))
+		if err != nil {
+			return nil, err
+		}
+
+		if user.Role > 40 {
+			shouldToRemove = false
+		}
+
+	}
 	go func() {
+		// check is a qiniu resource or not
+		// if is a qiniu resource, delete first
+		// then remove this item in database
+		bucketManager := qn.GetBucketManager()
 		for _, cellID := range cellIDs {
 			revel.INFO.Println(cellID)
-			model.CellHide(cellID)
+			girl := model.FetchOneGirl(initial.DB, cellID)
+			if strings.HasPrefix(girl.Img, "qn://") {
+				// TODO: delete
+				filename := config.RevertFilename(girl.Img)
+				qn.DeleteFromQiniu(bucketManager, filename)
+			}
+			model.CellHideOrRemove(cellID, shouldToRemove)
 		}
 	}()
 

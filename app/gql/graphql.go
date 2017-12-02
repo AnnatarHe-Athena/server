@@ -37,9 +37,10 @@ func getRootSchema() *graphql.Object {
 				Type:        graphql.NewList(model.GirlGraphqlSchema),
 				Description: "girls",
 				Args: graphql.FieldConfigArgument{
-					"offset": &graphql.ArgumentConfig{Type: graphql.Int},
-					"take":   &graphql.ArgumentConfig{Type: graphql.Int},
-					"from":   &graphql.ArgumentConfig{Type: graphql.Int},
+					"offset":   &graphql.ArgumentConfig{Type: graphql.Int},
+					"take":     &graphql.ArgumentConfig{Type: graphql.Int},
+					"from":     &graphql.ArgumentConfig{Type: graphql.Int},
+					"hideOnly": &graphql.ArgumentConfig{Type: graphql.Boolean},
 				},
 				Resolve: GirlsResolver,
 			},
@@ -109,7 +110,8 @@ func getRootMutation() *graphql.Object {
 				Description: "remove girl cell",
 				Args: graphql.FieldConfigArgument{
 					// mutation: { removeGirl: ( cells: [1,2,3] ) }
-					"cells": &graphql.ArgumentConfig{Type: graphql.NewList(graphql.Int)},
+					"cells":    &graphql.ArgumentConfig{Type: graphql.NewList(graphql.Int)},
+					"toRemove": &graphql.ArgumentConfig{Type: graphql.Boolean},
 				},
 				Resolve: RemoveGirl,
 			},

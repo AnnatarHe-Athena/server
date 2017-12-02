@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io"
 	"strconv"
-	"strings"
 	"time"
 
 	"golang.org/x/crypto/scrypt"
@@ -25,15 +24,9 @@ func IsTokenPair(c *revel.Controller) (bool, error) {
 	}
 
 	token := c.Request.Header.Get("athena-token")
+	userID := GetUID(c.Request)
 
-	userID := c.Session["userID"]
-
-	// app 客户端并没有 session， 所以一定会报错。那么这里从 token 取得 userID
-	if userID == "" {
-		userID = strings.Split(token, "|")[0]
-	}
-
-	innerToken, err := initial.Redis.Get("token:" + userID).Result()
+	innerToken, err := initial.Redis.Get("token:" + string(userID)).Result()
 
 	revel.INFO.Println(innerToken, token)
 

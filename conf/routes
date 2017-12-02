@@ -23,6 +23,8 @@ DELETE  /api/collection/:ids                    Collection.RemoveFromCollection
 GET     /graphql/v1                             GraphQLController.Fetch
 POST    /graphql/v1                             GraphQLController.FetchByPost
 
+GET     /api/v1/qiniu-token                     App.GetQiniuToken
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 GET     /api/exception/token                    ExceptionController.TokenMiss

@@ -16,6 +16,7 @@ type User struct {
 	Name        string      `json:"name"`
 	Pwd         string      `json:"-"`
 	Avatar      string      `json:"avatar"`
+	Role        int         `json:"role"`
 	Bio         string      `json:"bio"`
 	Token       string      `json:"token"`
 	Collections Collections `json:"collection"`
@@ -87,7 +88,7 @@ func (u *User) Update(db *sql.DB) error {
 // FetchUserBy userID
 func FetchUserBy(db *sql.DB, id int) (*User, error) {
 	// FIXME: 需要排查，这里有错误
-	rows, err := db.Query("SELECT id, email, name, pwd, avatar, bio FROM users users WHERE users.id=$1", id)
+	rows, err := db.Query("SELECT id, email, name, pwd, avatar, role, bio FROM users users WHERE users.id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -120,9 +121,9 @@ func getUsersInfoFrom(rows *sql.Rows) ([]*User, error) {
 	defer rows.Close()
 	var users []*User
 	for rows.Next() {
-		var id int
+		var id, role int
 		var email, name, pwd, avatar, bio string
-		if err := rows.Scan(&id, &email, &name, &pwd, &avatar, &bio); err != nil {
+		if err := rows.Scan(&id, &email, &name, &pwd, &avatar, &role, &bio); err != nil {
 			return nil, err
 		}
 		user := &User{
@@ -131,6 +132,7 @@ func getUsersInfoFrom(rows *sql.Rows) ([]*User, error) {
 			Name:   name,
 			Pwd:    pwd,
 			Avatar: avatar,
+			Role:   role,
 			Bio:    bio,
 		}
 		users = append(users, user)

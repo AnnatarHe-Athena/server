@@ -3,3 +3,4 @@ tmp/
 routes/
 .vscode/
 server.tar.gz
+conf/app.conf

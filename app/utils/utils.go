@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"strings"
 
+	"github.com/douban-girls/qiniu-migrate/qn"
+
 	"github.com/graphql-go/graphql"
 
 	"strconv"
@@ -79,4 +81,8 @@ func Log(tag string, err error) {
 	if err != nil {
 		revel.INFO.Println(tag, err)
 	}
+}
+
+func GenQiniuToken() string {
+	return qn.SetupQiniu()
 }
