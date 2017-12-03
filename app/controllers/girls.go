@@ -16,7 +16,7 @@ type Girls struct {
 
 // Get will return girls by params
 func (g Girls) Get(cate, row, offset int) revel.Result {
-	girls, err := model.FetchGirls(initial.DB, cate, row, offset)
+	girls, err := model.FetchGirls(initial.DB, cate, row, offset, 2)
 	if err != nil {
 		return g.RenderJSON(utils.Response(500, nil, err))
 	}

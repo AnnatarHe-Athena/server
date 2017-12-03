@@ -46,6 +46,7 @@ var UserGraph = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"avatar": &graphql.Field{Type: graphql.String},
 		"bio":    &graphql.Field{Type: graphql.String},
+		"role":   &graphql.Field{Type: graphql.Int},
 		"token":  &graphql.Field{Type: graphql.String},
 		"collections": &graphql.Field{
 			// TODO:
@@ -63,13 +64,14 @@ func NewUser(id int, email, name, pwd, avatar, bio, token string) *User {
 		Pwd:    pwd,
 		Avatar: avatar,
 		Bio:    bio,
+		Role:   50,
 	}
 }
 
 // Save 用户注册的时候没有 uid，所以无法生成 token
 func (u *User) Save(db *sql.DB) error {
 	id := 0
-	err := db.QueryRow("INSERT INTO users(email, name, pwd, avatar, bio) VALUES($1, $2, $3, $4, $5) RETURNING id", u.Email, u.Name, u.Pwd, u.Avatar, u.Bio).Scan(&id)
+	err := db.QueryRow("INSERT INTO users(email, name, pwd, avatar, role, bio) VALUES($1, $2, $3, $4, $5) RETURNING id", u.Email, u.Name, u.Pwd, u.Avatar, u.Role, u.Bio).Scan(&id)
 	if err != nil {
 		return err
 	}
@@ -101,7 +103,7 @@ func FetchUserBy(db *sql.DB, id int) (*User, error) {
 
 // UserAuth receive email and password and return user profile
 func UserAuth(db *sql.DB, email, pwd string) (*User, error) {
-	rows, err := db.Query("SELECT id, email, name, pwd, avatar, bio FROM users users WHERE users.email=$1 AND users.pwd=$2", email, pwd)
+	rows, err := db.Query("SELECT id, email, name, pwd, avatar, role, bio FROM users users WHERE users.email=$1 AND users.pwd=$2", email, pwd)
 	if err != nil {
 		return nil, err
 	}
