@@ -45,11 +45,12 @@ func Sha256Encode(resource string) string {
 
 // GetUID will return uid from header
 func GetUID(request *revel.Request) int {
-	token := request.Header.Get("athena-token")
+	token := request.GetHttpHeader("athena-token")
 	if token == "" {
 		return -1
 	}
 	uidStr := strings.Split(token, "|")[0]
+
 	uid, err := strconv.Atoi(uidStr)
 	if err != nil {
 		return -1

@@ -23,12 +23,12 @@ func IsTokenPair(c *revel.Controller) (bool, error) {
 		return true, nil
 	}
 
-	token := c.Request.Header.Get("athena-token")
+	token := c.Request.GetHttpHeader("athena-token")
 	userID := GetUID(c.Request)
 
-	innerToken, err := initial.Redis.Get("token:" + string(userID)).Result()
+	innerToken, err := initial.Redis.Get("token:" + strconv.Itoa(userID)).Result()
 
-	revel.INFO.Println(innerToken, token)
+	revel.INFO.Println("inner token is: ", innerToken, "header token is:", token)
 
 	if err != nil || token != innerToken {
 		revel.INFO.Println(err)
