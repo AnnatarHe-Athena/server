@@ -2,6 +2,7 @@ package filters
 
 import (
 	"errors"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -43,7 +44,8 @@ func IPFilter(c *revel.Controller, fc []revel.Filter) {
 	// 每个ip每天限制300个请求
 	if countInt > 300 {
 		err := errors.New("api request out of limit")
-		c.Result = c.RenderJSON(utils.Response(500, nil, err))
+		c.Response.SetStatus(http.StatusTooManyRequests)
+		c.Result = c.RenderJSON(utils.Response(http.StatusTooManyRequests, nil, err))
 		return
 	}
 
